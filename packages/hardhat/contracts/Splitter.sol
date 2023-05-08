@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 /**
  * @title ETHSplitter
@@ -113,7 +114,7 @@ contract ETHSplitter is ReentrancyGuard {
       if (i == 0) {
         amountToSend = amountToSend + remainingAmount;
       }
-      erc20Token.transferFrom(msg.sender, recipients[i], amountToSend);
+      SafeERC20.safeTransferFrom(erc20Token, msg.sender, recipients[i], amountToSend);
       sentAmount = sentAmount + amountToSend;
     }
 
@@ -170,7 +171,7 @@ contract ETHSplitter is ReentrancyGuard {
     for (uint256 i = 0; i < length; ++i) {
       require(recipients[i] != address(0), "Invalid recipient address");
       require(amounts[i] >= 1, "Split amt >= smallest unit");
-      erc20Token.transferFrom(msg.sender, recipients[i], amounts[i]);
+      SafeERC20.safeTransferFrom(erc20Token, msg.sender, recipients[i], amounts[i]);
       totalAmount = totalAmount + amounts[i];
     }
   }
