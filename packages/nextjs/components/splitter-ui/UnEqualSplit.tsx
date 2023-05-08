@@ -12,11 +12,12 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
   const [amounts, setAmounts] = useState<string[]>([""]);
   const [amountsInWei, setAmountsInWei] = useState<any[]>([]);
   const [totalAmount, setTotalAmount] = useState("");
-  const [approveAmount, setApproveAmount] = useState("1000000000000000000000");
+
   const [tokenContract, setTokenContract] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenAllowance, setTokenAllowance] = useState("");
   const [tokenBalance, setTokenBalance] = useState("");
+  const approveAmount = "1000000000000000000000";
 
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
@@ -64,7 +65,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
   };
 
   useEffect(() => {
-    let totalETH = 0;
+    let totalETH: any = 0;
     const newAmountsInWei = [];
     for (let index = 0; index < amounts.length; index++) {
       if (amounts[index] === "") {
@@ -92,15 +93,13 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
 
   const approve = async () => {
     try {
-      let am = parseFloat(approveAmount);
-      am = am.toFixed(18);
       const config = await prepareWriteContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "approve",
         args: [splitterContract, approveAmount],
       });
-      const data = await writeContract(config);
+      await writeContract(config);
       setTokenAllowance(approveAmount);
     } catch (error) {
       console.log(error);
@@ -116,7 +115,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
       });
       setTokenName(name);
 
-      let allowance = await readContract({
+      let allowance: any = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "allowance",
@@ -126,7 +125,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
       allowance = parseInt(allowance, 16);
       setTokenAllowance(allowance.toString());
 
-      let balance = await readContract({
+      let balance: any = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "balanceOf",
@@ -141,7 +140,6 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
   };
 
   useEffect(() => {
-    let totalAmount = 0;
     for (let index = 0; index < amounts.length; index++) {
       if (wallets[index] === "" || amounts[index] === "") {
         return;

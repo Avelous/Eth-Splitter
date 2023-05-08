@@ -1,22 +1,20 @@
 import React, { useEffect, useState } from "react";
-import ERC20ABI from "../../external/ERC20ABI.json";
 import { readContract } from "@wagmi/core";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { ethers } from "ethers";
-import { parseUnits } from "ethers/lib/utils.js";
 import { erc20ABI } from "wagmi";
-import { useContractWrite, usePrepareContractWrite } from "wagmi";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 
 const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: string }) => {
   const [amount, setamount] = useState("");
   const [wallets, setWallets] = useState<string[]>([]);
-  const [approveAmount, setApproveAmount] = useState("1000000000000000000000");
+
   const [totalAmount, setTotalAmount] = useState("");
   const [tokenContract, setTokenContract] = useState("");
   const [tokenName, setTokenName] = useState("");
   const [tokenAllowance, setTokenAllowance] = useState("");
   const [tokenBalance, setTokenBalance] = useState("");
+  const approveAmount = "1000000000000000000000";
 
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
@@ -44,15 +42,13 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
 
   const approve = async () => {
     try {
-      let am = parseFloat(approveAmount);
-      am = am.toFixed(18);
       const config = await prepareWriteContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "approve",
         args: [splitterContract, approveAmount],
       });
-      const data = await writeContract(config);
+      await writeContract(config);
       setTokenAllowance(approveAmount);
     } catch (error) {
       console.log(error);
@@ -79,13 +75,12 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
       allowance = parseInt(allowance, 16);
       setTokenAllowance(allowance.toString());
 
-      let balance = await readContract({
+      let balance: any = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "balanceOf",
         args: [account.address.toString()],
       });
-      // balance = balance.toHexString();
       balance = ethers.utils.formatEther(balance, "ether");
       setTokenBalance(balance.toString());
     } catch (error) {
@@ -94,7 +89,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
   };
 
   useEffect(() => {
-    let totalAmount = 0;
+    let totalAmount: any = 0;
     for (let index = 0; index < wallets.length; index++) {
       if (wallets[index] === "" || amount === "") {
         return;
@@ -103,7 +98,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
     }
     if (splitItem === "split-tokens") totalAmount = ethers.utils.parseEther(totalAmount.toString(), "ether");
     setTotalAmount(totalAmount);
-  }, [amount, wallets]);
+  }, [amount, wallets, splitItem]);
 
   useEffect(() => {
     if (tokenContract !== "") getTokenData();
@@ -143,7 +138,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
             <div className="my-[10px] w-full space-y-4">
               <button
                 type="button"
-                disabled={wallets.length <= 1 || totalAmount == 0}
+                disabled={wallets.length <= 1 || totalAmount === ""}
                 onClick={async () => {
                   await splitEqualETH();
                 }}
