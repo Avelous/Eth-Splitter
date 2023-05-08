@@ -1,15 +1,26 @@
 import { useState } from "react";
 import Head from "next/head";
 import type { NextPage } from "next";
+import { useAccount } from "wagmi";
 import EqualSplit from "~~/components/splitter-ui/EqualSplit";
 import UnEqualSplit from "~~/components/splitter-ui/UnEqualSplit";
+import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const [activeItem, setActiveItem] = useState("split-eth");
   const [splitType, setSplitType] = useState("");
+  const account = useAccount();
 
   function handleItemClick(itemId: string) {
     setActiveItem(itemId);
+  }
+
+  let splitterContract: any;
+  let splitterAbi: any;
+
+  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo("ETHSplitter");
+  if (deployedContractData) {
+    ({ address: splitterContract, abi: splitterAbi } = deployedContractData);
   }
 
   return (
@@ -40,8 +51,12 @@ const Home: NextPage = () => {
           <option value="equal-splits">Equal Splits</option>
           <option value="unequal-splits">Unequal Splits</option>
         </select>
-        {splitType === "equal-splits" && <EqualSplit splitItem={activeItem} />}
-        {splitType === "unequal-splits" && <UnEqualSplit splitItem={activeItem} />}
+        {splitType === "equal-splits" && (
+          <EqualSplit splitItem={activeItem} account={account} splitterContract={splitterContract} />
+        )}
+        {splitType === "unequal-splits" && (
+          <UnEqualSplit splitItem={activeItem} account={account} splitterContract={splitterContract} />
+        )}
       </div>
     </>
   );
