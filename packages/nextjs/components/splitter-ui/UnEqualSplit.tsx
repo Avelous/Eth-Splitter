@@ -19,6 +19,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
   const [tokenBalance, setTokenBalance] = useState("");
   const approveAmount = "1000000000000000000000";
 
+
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
 
@@ -178,6 +179,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
                         className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem]  font-medium placeholder:text-accent/50 w-full text-gray-400 bg-base-200 border-2 border-base-300"
                         type="number"
                         min={0}
+                        value={amounts[index]}
                         onChange={val => updateAmounts(val.target.value, index)}
                         placeholder="Amount"
                       />
@@ -185,6 +187,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
                   </div>
                   {index > 0 && (
                     <button
+                      type="button"
                       onClick={() => {
                         removeWalletField(index);
                       }}
@@ -296,6 +299,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
                     </div>
                     {index > 0 && (
                       <button
+                        type="button"
                         onClick={() => {
                           removeWalletField(index);
                         }}
