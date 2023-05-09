@@ -117,6 +117,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
                 <input
                   type="number"
                   value={amount}
+                  min={0}
                   onChange={e => setamount(e.target.value)}
                   className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400  border w-full font-medium placeholder:text-accent/50 text-gray-400"
                 />
@@ -205,6 +206,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
                   <input
                     type="number"
                     value={amount}
+                    min={0}
                     onChange={e => setamount(e.target.value)}
                     className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 border w-full font-medium placeholder:text-accent/50 text-gray-400"
                   />

@@ -65,24 +65,24 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
   };
 
   useEffect(() => {
-    let totalETH: any = 0;
+    let totalETH = 0;
     const newAmountsInWei = [];
     for (let index = 0; index < amounts.length; index++) {
       if (amounts[index] === "") {
         return;
       }
       totalETH += parseFloat(amounts[index]);
-      newAmountsInWei.push(ethers.utils.parseUnits(parseFloat(amounts[index]).toString(), "ether"));
+      newAmountsInWei.push(ethers.utils.parseUnits(amounts[index].toString(), "ether"));
     }
     setAmountsInWei(newAmountsInWei);
-    setTotalAmount(totalETH);
+    setTotalAmount(totalETH.toFixed(18));
   }, [amounts]);
 
   const { writeAsync: splitETH, isLoading: splitEthLoading } = useScaffoldContractWrite(
     "ETHSplitter",
     "splitETH",
     [wallets, amountsInWei],
-    totalAmount.toString(),
+    totalAmount,
   );
 
   const { writeAsync: splitERC20, isLoading: splitErc20Loading } = useScaffoldContractWrite(
@@ -177,6 +177,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
                       <input
                         className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem]  font-medium placeholder:text-accent/50 w-full text-gray-400 bg-base-200 border-2 border-base-300"
                         type="number"
+                        min={0}
                         onChange={val => updateAmounts(val.target.value, index)}
                         placeholder="Amount"
                       />
@@ -287,6 +288,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
                         <input
                           className="input  input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] font-medium placeholder:text-accent/50 w-full text-gray-400 bg-base-200 border-2 border-base-300"
                           type="number"
+                          min={0}
                           onChange={val => updateAmounts(val.target.value, index)}
                           placeholder="Amount"
                         />
