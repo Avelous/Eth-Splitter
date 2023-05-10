@@ -16,10 +16,21 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
   const [tokenBalance, setTokenBalance] = useState("");
   const approveAmount = "1000000000000000000000";
 
+  console.log(totalAmount);
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
-
-    const addresses: string[] = value.trim().split(",");
+    let addresses: string[];
+    if (value.includes(",")) {
+      addresses = value
+        .trim()
+        .split(",")
+        .map(str => str.replace(/\n/g, "").replace(/\s/g, ""));
+    } else {
+      addresses = value
+        .trim()
+        .split(/\s+/)
+        .map(str => str.replace(/\s/g, ""));
+    }
 
     let uniqueAddresses = [...new Set([...addresses])];
 
@@ -56,7 +67,6 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
   };
 
   const getTokenData = async () => {
-    console.log(tokenContract);
     try {
       const name = await readContract({
         address: tokenContract,
@@ -123,7 +133,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
                 />
               </div>
             </div>
-            <div className="flex flex-col space-y-1 w-full my-1">
+            <div className="flex flex-col space-y-1 w-full my-1 ">
               <p className="font-semibold  ml-1 my-0 break-words">Recipient Wallets</p>
               <div
                 className={`flex items-center justify-between border-2 border-base-300 bg-base-200 rounded-xl text-accent w-full`}
@@ -136,10 +146,11 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
                 />
               </div>
             </div>
+            <p className="ml-2 -mt-1">valid unique addresses: {wallets.length}</p>
             <div className="my-[10px] w-full space-y-4">
               <button
                 type="button"
-                disabled={wallets.length <= 1 || totalAmount === ""}
+                disabled={wallets.length <= 1 || totalAmount === 0}
                 onClick={async () => {
                   await splitEqualETH();
                 }}
@@ -225,6 +236,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
                   />
                 </div>
               </div>
+              <p className="ml-2 -mt-1">valid unique addresses: {wallets.length}</p>
               <div className="my-[10px] w-full space-y-4">
                 <button
                   type="button"
