@@ -131,7 +131,7 @@ contract ETHSplitter is ReentrancyGuard {
    */
   function _splitETH(
     address payable[] calldata recipients,
-    uint256[] memory amounts,
+    uint256[] calldata amounts,
     uint256 totalAvailable
   ) internal returns (uint256 remainingAmount) {
     uint256 length = recipients.length;
@@ -161,7 +161,7 @@ contract ETHSplitter is ReentrancyGuard {
   function _transferTokensFromSenderToRecipients(
     IERC20 erc20Token,
     address[] calldata recipients,
-    uint256[] memory amounts
+    uint256[] calldata amounts
   ) internal {
     uint256 length = recipients.length;
 
@@ -181,7 +181,7 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The array of payable addresses
    * @return _recipients The array of regular addresses
    */
-  function _convertToAddresses(address payable[] memory recipients) internal pure returns (address[] memory) {
+  function _convertToAddresses(address payable[] calldata recipients) internal pure returns (address[] memory) {
     address[] memory _recipients = new address[](recipients.length);
     for (uint256 i = 0; i < recipients.length; ++i) {
       _recipients[i] = recipients[i];
