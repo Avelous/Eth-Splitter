@@ -16,7 +16,6 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
   const [tokenBalance, setTokenBalance] = useState("");
   const approveAmount = "1000000000000000000000";
 
-  console.log(totalAmount);
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
     let addresses: string[];
@@ -60,7 +59,6 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
         args: [splitterContract, approveAmount],
       });
       await writeContract(config);
-      setTokenAllowance(approveAmount);
     } catch (error) {
       console.log(error);
     }
@@ -83,7 +81,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
       });
       allowance = allowance.toHexString();
       allowance = parseInt(allowance, 16);
-      setTokenAllowance(allowance.toString());
+      setTokenAllowance(allowance.toLocaleString());
 
       let balance: any = await readContract({
         address: tokenContract,
@@ -92,7 +90,7 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
         args: [account.address.toString()],
       });
       balance = ethers.utils.formatEther(balance, "ether");
-      setTokenBalance(balance.toString());
+      setTokenBalance(balance.toLocaleString());
     } catch (error) {
       console.log(error);
     }
@@ -106,7 +104,11 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
       }
       totalAmount += parseFloat(amount);
     }
-    if (splitItem === "split-tokens") totalAmount = ethers.utils.parseEther(totalAmount.toString(), "ether");
+    if (splitItem === "split-tokens") {
+      totalAmount = ethers.utils.parseEther(totalAmount.toFixed(18));
+    } else {
+      totalAmount = totalAmount.toFixed(18);
+    }
     setTotalAmount(totalAmount);
   }, [amount, wallets, splitItem]);
 
@@ -198,7 +200,8 @@ const EqualSplit = ({ splitItem, account, splitterContract }: { splitItem: strin
                     disabled={tokenContract == "" || tokenName == ""}
                     className={`btn btn-primary w-2/5 font-black `}
                     onClick={async () => {
-                      approve();
+                      await approve();
+                      getTokenData();
                     }}
                   >
                     Approve

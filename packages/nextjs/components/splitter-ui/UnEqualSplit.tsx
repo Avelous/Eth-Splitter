@@ -76,6 +76,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
     }
     setAmountsInWei(newAmountsInWei);
     setTotalAmount(totalETH.toFixed(18));
+ 
   }, [amounts]);
 
   const { writeAsync: splitETH, isLoading: splitEthLoading } = useScaffoldContractWrite(
@@ -100,7 +101,6 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
         args: [splitterContract, approveAmount],
       });
       await writeContract(config);
-      setTokenAllowance(approveAmount);
     } catch (error) {
       console.log(error);
     }
@@ -121,9 +121,10 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
         functionName: "allowance",
         args: [account.address.toString(), splitterContract],
       });
+
       allowance = allowance.toHexString();
       allowance = parseInt(allowance, 16);
-      setTokenAllowance(allowance.toString());
+      setTokenAllowance(allowance.toLocaleString());
 
       let balance: any = await readContract({
         address: tokenContract,
@@ -133,7 +134,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
       });
       // balance = balance.toHexString();
       balance = ethers.utils.formatEther(balance, "ether");
-      setTokenBalance(balance.toString());
+      setTokenBalance(balance.toLocaleString());
     } catch (error) {
       console.log(error);
     }
@@ -265,6 +266,7 @@ const UnEqualSplit = ({ splitItem, account, splitterContract }: { splitItem: str
                     className={`btn btn-primary w-2/5 font-black `}
                     onClick={async () => {
                       await approve();
+                      getTokenData();
                     }}
                   >
                     Approve
