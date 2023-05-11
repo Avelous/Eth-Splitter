@@ -64,6 +64,15 @@ export const useAutoConnect = (): void => {
   }, [accountState.isConnected, accountState.connector?.name]);
 
   useEffectOnce(() => {
+    // Safe logic
+    const connectorInstance = connectState.connectors.find(c => c.id === "safe" && c.ready);
+
+    if (connectorInstance) {
+      connectState.connect({ connector: connectorInstance });
+      return;
+    }
+    // --- end of safe logic
+
     const initialConnector = getInitialConnector(walletId, connectState.connectors);
 
     if (initialConnector?.connector) {
