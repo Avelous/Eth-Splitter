@@ -1,4 +1,222 @@
 const contracts = {
+  1: [
+    {
+      name: "mainnet",
+      chainId: "1",
+      contracts: {
+        ETHSplitter: {
+          address: "0xb13870fA7EABD6DD6F716DBED660f51BdC1DAc3b",
+          abi: [
+            {
+              inputs: [],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "Erc20Split",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+              ],
+              name: "Erc20SplitEqual",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "EthSplit",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+              ],
+              name: "EthSplitEqual",
+              type: "event",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "token",
+                  type: "address",
+                },
+                {
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "splitERC20",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address payable[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "splitETH",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "token",
+                  type: "address",
+                },
+                {
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+              ],
+              name: "splitEqualERC20",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address payable[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+              ],
+              name: "splitEqualETH",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "token",
+                  type: "address",
+                },
+              ],
+              name: "withdraw",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              stateMutability: "payable",
+              type: "receive",
+            },
+          ],
+        },
+      },
+    },
+  ],
   137: [
     {
       name: "polygon",
@@ -585,216 +803,6 @@ const contracts = {
       name: "localhost",
       chainId: "31337",
       contracts: {
-        ETHSplitter: {
-          address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
-          abi: [
-            {
-              inputs: [],
-              stateMutability: "nonpayable",
-              type: "constructor",
-            },
-            {
-              anonymous: false,
-              inputs: [
-                {
-                  indexed: true,
-                  internalType: "address",
-                  name: "sender",
-                  type: "address",
-                },
-                {
-                  indexed: false,
-                  internalType: "address[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-                {
-                  indexed: false,
-                  internalType: "uint256[]",
-                  name: "amounts",
-                  type: "uint256[]",
-                },
-              ],
-              name: "Erc20Split",
-              type: "event",
-            },
-            {
-              anonymous: false,
-              inputs: [
-                {
-                  indexed: true,
-                  internalType: "address",
-                  name: "sender",
-                  type: "address",
-                },
-                {
-                  indexed: false,
-                  internalType: "uint256",
-                  name: "totalAmount",
-                  type: "uint256",
-                },
-                {
-                  indexed: false,
-                  internalType: "address[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-              ],
-              name: "Erc20SplitEqual",
-              type: "event",
-            },
-            {
-              anonymous: false,
-              inputs: [
-                {
-                  indexed: true,
-                  internalType: "address",
-                  name: "sender",
-                  type: "address",
-                },
-                {
-                  indexed: false,
-                  internalType: "uint256",
-                  name: "totalAmount",
-                  type: "uint256",
-                },
-                {
-                  indexed: false,
-                  internalType: "address[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-                {
-                  indexed: false,
-                  internalType: "uint256[]",
-                  name: "amounts",
-                  type: "uint256[]",
-                },
-              ],
-              name: "EthSplit",
-              type: "event",
-            },
-            {
-              anonymous: false,
-              inputs: [
-                {
-                  indexed: true,
-                  internalType: "address",
-                  name: "sender",
-                  type: "address",
-                },
-                {
-                  indexed: false,
-                  internalType: "uint256",
-                  name: "totalAmount",
-                  type: "uint256",
-                },
-                {
-                  indexed: false,
-                  internalType: "address[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-              ],
-              name: "EthSplitEqual",
-              type: "event",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "token",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-                {
-                  internalType: "uint256[]",
-                  name: "amounts",
-                  type: "uint256[]",
-                },
-              ],
-              name: "splitERC20",
-              outputs: [],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address payable[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-                {
-                  internalType: "uint256[]",
-                  name: "amounts",
-                  type: "uint256[]",
-                },
-              ],
-              name: "splitETH",
-              outputs: [],
-              stateMutability: "payable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "token",
-                  type: "address",
-                },
-                {
-                  internalType: "address[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-                {
-                  internalType: "uint256",
-                  name: "totalAmount",
-                  type: "uint256",
-                },
-              ],
-              name: "splitEqualERC20",
-              outputs: [],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address payable[]",
-                  name: "recipients",
-                  type: "address[]",
-                },
-              ],
-              name: "splitEqualETH",
-              outputs: [],
-              stateMutability: "payable",
-              type: "function",
-            },
-            {
-              inputs: [
-                {
-                  internalType: "address",
-                  name: "token",
-                  type: "address",
-                },
-              ],
-              name: "withdraw",
-              outputs: [],
-              stateMutability: "nonpayable",
-              type: "function",
-            },
-            {
-              stateMutability: "payable",
-              type: "receive",
-            },
-          ],
-        },
         ERC20Mock: {
           address: "0x9fE46736679d2D9a65F0992F2272dE9f3c7fa6e0",
           abi: [
@@ -1155,6 +1163,216 @@ const contracts = {
               ],
               stateMutability: "nonpayable",
               type: "function",
+            },
+          ],
+        },
+        ETHSplitter: {
+          address: "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512",
+          abi: [
+            {
+              inputs: [],
+              stateMutability: "nonpayable",
+              type: "constructor",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "Erc20Split",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+              ],
+              name: "Erc20SplitEqual",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "EthSplit",
+              type: "event",
+            },
+            {
+              anonymous: false,
+              inputs: [
+                {
+                  indexed: true,
+                  internalType: "address",
+                  name: "sender",
+                  type: "address",
+                },
+                {
+                  indexed: false,
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+                {
+                  indexed: false,
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+              ],
+              name: "EthSplitEqual",
+              type: "event",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "token",
+                  type: "address",
+                },
+                {
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "splitERC20",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address payable[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256[]",
+                  name: "amounts",
+                  type: "uint256[]",
+                },
+              ],
+              name: "splitETH",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "token",
+                  type: "address",
+                },
+                {
+                  internalType: "address[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+                {
+                  internalType: "uint256",
+                  name: "totalAmount",
+                  type: "uint256",
+                },
+              ],
+              name: "splitEqualERC20",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address payable[]",
+                  name: "recipients",
+                  type: "address[]",
+                },
+              ],
+              name: "splitEqualETH",
+              outputs: [],
+              stateMutability: "payable",
+              type: "function",
+            },
+            {
+              inputs: [
+                {
+                  internalType: "address",
+                  name: "token",
+                  type: "address",
+                },
+              ],
+              name: "withdraw",
+              outputs: [],
+              stateMutability: "nonpayable",
+              type: "function",
+            },
+            {
+              stateMutability: "payable",
+              type: "receive",
             },
           ],
         },
