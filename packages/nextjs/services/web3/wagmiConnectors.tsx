@@ -58,7 +58,7 @@ const wallets = [
 const safeConnector = new SafeConnector({
   chains: enabledChains,
   options: {
-    allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/],
+    allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/, /multisig.lol$/],
     debug: false,
   },
 });
