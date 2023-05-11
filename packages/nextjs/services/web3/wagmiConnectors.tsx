@@ -7,6 +7,7 @@ import {
   rainbowWallet,
   walletConnectWallet,
 } from "@rainbow-me/rainbowkit/wallets";
+import { SafeConnector } from "@wagmi/connectors/safe";
 import { configureChains } from "wagmi";
 import * as chains from "wagmi/chains";
 import { alchemyProvider } from "wagmi/providers/alchemy";
@@ -54,12 +55,22 @@ const wallets = [
   rainbowWallet({ chains: appChains.chains }),
 ];
 
+const safeConnector = new SafeConnector({
+  chains: enabledChains,
+  options: {
+    allowedDomains: [/gnosis-safe.io$/, /app.safe.global$/],
+    debug: false,
+  },
+});
+
 /**
- * wagmi connectors for the wagmi context
+ * Rainbowkit connectors for the wagmi context
  */
-export const wagmiConnectors = connectorsForWallets([
+export const rainbowKitConnectors = connectorsForWallets([
   {
     groupName: "Supported Wallets",
     wallets: burnerConfig.enabled ? [...wallets, burnerWalletConfig({ chains: [appChains.chains[0]] })] : wallets,
   },
 ]);
+
+export const wagmiConnectors = [...rainbowKitConnectors(), safeConnector];
