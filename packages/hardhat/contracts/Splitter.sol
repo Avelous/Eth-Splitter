@@ -13,13 +13,23 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  */
 
 contract ETHSplitter is ReentrancyGuard {
-  address private _owner;
+  address private immutable _owner;
 
   // Events
   event EthSplit(address indexed sender, uint256 totalAmount, address[] recipients, uint256[] amounts);
   event EthSplitEqual(address indexed sender, uint256 totalAmount, address[] recipients);
   event Erc20Split(address indexed sender, address[] recipients, uint256[] amounts);
   event Erc20SplitEqual(address indexed sender, uint256 totalAmount, address[] recipients);
+
+  //*********************************************************************//
+  // --------------------------- custom errors ------------------------- //
+  //*********************************************************************//
+  error INVALID_INPUT();
+  error INSUFFICIENT_RECIPIENT_COUNT();
+  error INVALID_RECIPIENT();
+  error INSUFFICIENT_SPLIT_AMOUNT();
+  error ONLY_OWNER();
+  error TRANSFER_FAILED();
 
   /**
    * @notice The constructor sets the owner of the contract
@@ -32,7 +42,7 @@ contract ETHSplitter is ReentrancyGuard {
    * @notice A modifier to ensure that only the owner can perform certain actions
    */
   modifier onlyOwner() {
-    require(msg.sender == _owner, "Owner Only");
+    if (msg.sender != _owner) revert ONLY_OWNER();
     _;
   }
 
@@ -46,8 +56,8 @@ contract ETHSplitter is ReentrancyGuard {
     emit EthSplit(msg.sender, msg.value, _convertToAddresses(recipients), amounts);
 
     if (remainingAmount > 0) {
-      (bool success, ) = msg.sender.call{value: remainingAmount}("");
-      require(success, "Refund failed");
+      (bool success, ) = msg.sender.call{value: remainingAmount, gas: 2200}("");
+      if (!success) revert TRANSFER_FAILED();
     }
   }
 
@@ -61,19 +71,19 @@ contract ETHSplitter is ReentrancyGuard {
     uint256 equalAmount = totalAmount / rLength;
     uint256 remainingAmount = totalAmount % rLength;
 
-    require(msg.value >= rLength, "Min. 1 wei/recipient for splitting");
-    require(rLength <= 25 && rLength >= 2, "Recipients: min. 2, max. 25");
+    if (rLength > 25 || rLength < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
 
-    uint256 sentAmount = 0;
-    for (uint256 i = 0; i < rLength; ++i) {
-      require(recipients[i] != address(0), "Invalid recipient address");
+    for (uint256 i = 0; i < rLength;) {
+      if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
       uint256 amountToSend = equalAmount;
       if (i == 0) {
         amountToSend = amountToSend + remainingAmount;
       }
-      (bool success, ) = recipients[i].call{value: amountToSend}("");
-      require(success, "Transfer failed");
-      sentAmount = sentAmount + amountToSend;
+      (bool success, ) = recipients[i].call{value: amountToSend, gas: 2200}("");
+      if (!success) revert TRANSFER_FAILED();
+      unchecked {
+        ++i;
+      }
     }
 
     emit EthSplitEqual(msg.sender, msg.value, _convertToAddresses(recipients));
@@ -85,9 +95,8 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The noble recipients of the ERC20 tokens
    * @param amounts The amounts each recipient shall receive
    */
-  function splitERC20(address token, address[] calldata recipients, uint256[] calldata amounts) external nonReentrant {
-    IERC20 erc20Token = IERC20(token);
-    _transferTokensFromSenderToRecipients(erc20Token, recipients, amounts);
+  function splitERC20(IERC20 token, address[] calldata recipients, uint256[] calldata amounts) external nonReentrant {
+    _transferTokensFromSenderToRecipients(token, recipients, amounts);
     emit Erc20Split(msg.sender, recipients, amounts);
   }
 
@@ -97,28 +106,28 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The noble recipients of the ERC20 tokens
    * @param totalAmount The total amount to be shared
    */
-  function splitEqualERC20(address token, address[] calldata recipients, uint256 totalAmount) external nonReentrant {
-    IERC20 erc20Token = IERC20(token);
-
+  function splitEqualERC20(IERC20 token, address[] calldata recipients, uint256 totalAmount) external nonReentrant {
     uint256 rLength = recipients.length;
-    require(rLength <= 25 && rLength >= 2, "Recipients: min. 2, max. 25");
-    uint256 equalAmount = totalAmount / rLength;
-    require(equalAmount >= 1, "Split amt >= smallest unit");
-    uint256 remainingAmount = totalAmount % rLength;
 
-    uint256 sentAmount = 0;
-    for (uint256 i = 0; i < rLength; ++i) {
-      require(recipients[i] != address(0), "Invalid recipient address");
+    if (rLength > 25 || rLength < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
+
+    uint256 equalAmount = totalAmount / rLength;
+
+    uint256 remainingAmount = totalAmount % rLength;
+    for (uint256 i = 0; i < rLength;) {
+      if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
 
       uint256 amountToSend = equalAmount;
       if (i == 0) {
         amountToSend = amountToSend + remainingAmount;
       }
-      SafeERC20.safeTransferFrom(erc20Token, msg.sender, recipients[i], amountToSend);
-      sentAmount = sentAmount + amountToSend;
+      SafeERC20.safeTransferFrom(token, msg.sender, recipients[i], amountToSend);
+      unchecked {
+        ++i;
+      }
     }
 
-    emit Erc20SplitEqual(msg.sender, sentAmount, recipients);
+    emit Erc20SplitEqual(msg.sender, totalAmount + remainingAmount, recipients);
   }
 
   /**
@@ -135,18 +144,22 @@ contract ETHSplitter is ReentrancyGuard {
     uint256 totalAvailable
   ) internal returns (uint256 remainingAmount) {
     uint256 length = recipients.length;
-    require(length == amounts.length, "Array lengths must be equal");
-    require(length >= 2 && length <= 25, "Recipients: min. 2, max. 25"); //TODO: need to consider reasonable limits
+    if (length != amounts.length) revert INVALID_INPUT();
+    
+    if (length > 25 || length < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
 
     uint256 totalAmount = 0;
-    for (uint256 i = 0; i < length; ++i) {
-      require(recipients[i] != address(0), "Invalid recipient address");
-      require(amounts[i] >= 1 wei, "Split amt >= smallest unit");
-      totalAmount = totalAmount + amounts[i];
-      require(totalAmount <= totalAvailable, "Total split <= available balance");
+    for (uint256 i = 0; i < length;) {
+      if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
+      if (amounts[i] == 0) revert INSUFFICIENT_SPLIT_AMOUNT();
 
-      (bool success, ) = recipients[i].call{value: amounts[i]}("");
-      require(success, "Transfer failed");
+      totalAmount = totalAmount + amounts[i];
+
+      (bool success, ) = recipients[i].call{value: amounts[i], gas: 2200}("");
+      if (!success) revert TRANSFER_FAILED();
+      unchecked {
+        ++i;
+      }
     }
 
     return totalAvailable - totalAmount;
@@ -165,14 +178,17 @@ contract ETHSplitter is ReentrancyGuard {
   ) internal {
     uint256 length = recipients.length;
 
-    require(length == amounts.length, "Array lengths must be equal");
-    require(length >= 2 && length <= 25, "Recipients: min. 2, max. 25"); //TODO: need to consider reasonable limits
-    uint256 totalAmount = 0;
-    for (uint256 i = 0; i < length; ++i) {
-      require(recipients[i] != address(0), "Invalid recipient address");
-      require(amounts[i] >= 1, "Split amt >= smallest unit");
+    if (length != amounts.length) revert INVALID_INPUT();
+    if (length > 25 || length < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
+
+    for (uint256 i = 0; i < length;) {
+      if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
+      if (amounts[i] == 0) revert INSUFFICIENT_SPLIT_AMOUNT();
+
       SafeERC20.safeTransferFrom(erc20Token, msg.sender, recipients[i], amounts[i]);
-      totalAmount = totalAmount + amounts[i];
+      unchecked {
+        ++i;
+      }
     }
   }
 
@@ -183,8 +199,11 @@ contract ETHSplitter is ReentrancyGuard {
    */
   function _convertToAddresses(address payable[] calldata recipients) internal pure returns (address[] memory) {
     address[] memory _recipients = new address[](recipients.length);
-    for (uint256 i = 0; i < recipients.length; ++i) {
+    for (uint256 i = 0; i < recipients.length;) {
       _recipients[i] = recipients[i];
+       unchecked {
+        ++i;
+      }
     }
     return _recipients;
   }
@@ -193,13 +212,12 @@ contract ETHSplitter is ReentrancyGuard {
    * @notice Withdraws the remaining ETH or ERC20 tokens to the owner's address
    * @param token The address of the ERC20 token, or 0 for ETH
    */
-  function withdraw(address token) external onlyOwner {
-    if (token == address(0)) {
-      (bool success, ) = _owner.call{value: address(this).balance}("");
-      require(success, "Withdrawal failed");
+  function withdraw(IERC20 token) external onlyOwner {
+    if (address(token) == address(0)) {
+      (bool success, ) = _owner.call{value: address(this).balance, gas: 2200}("");
+      if (!success) revert TRANSFER_FAILED();
     } else {
-      IERC20 erc20Token = IERC20(token);
-      erc20Token.transfer(_owner, erc20Token.balanceOf(address(this)));
+      token.transfer(_owner, token.balanceOf(address(this)));
     }
   }
 
