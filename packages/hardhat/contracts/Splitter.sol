@@ -127,7 +127,7 @@ contract ETHSplitter is ReentrancyGuard {
       }
     }
 
-    emit Erc20SplitEqual(msg.sender, totalAmount + remainingAmount, recipients);
+    emit Erc20SplitEqual(msg.sender, totalAmount, recipients);
   }
 
   /**
