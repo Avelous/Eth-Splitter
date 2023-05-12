@@ -2,8 +2,8 @@ import { useState } from "react";
 import Head from "next/head";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import EqualSplit from "~~/components/splitter-ui/EqualSplit";
-import UnEqualSplit from "~~/components/splitter-ui/UnEqualSplit";
+import EqualUi from "~~/components/splitter-ui/EqualUi";
+import UnEqualUi from "~~/components/splitter-ui/UnEqualUi";
 import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
@@ -52,10 +52,10 @@ const Home: NextPage = () => {
           <option value="unequal-splits">Unequal Splits</option>
         </select>
         {splitType === "equal-splits" && (
-          <EqualSplit splitItem={activeItem} account={account} splitterContract={splitterContract} />
+          <EqualUi splitItem={activeItem} account={account} splitterContract={splitterContract} />
         )}
         {splitType === "unequal-splits" && (
-          <UnEqualSplit splitItem={activeItem} account={account} splitterContract={splitterContract} />
+          <UnEqualUi splitItem={activeItem} account={account} splitterContract={splitterContract} />
         )}
       </div>
     </>
