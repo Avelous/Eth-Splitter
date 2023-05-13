@@ -198,8 +198,9 @@ contract ETHSplitter is ReentrancyGuard {
    * @return _recipients The array of regular addresses
    */
   function _convertToAddresses(address payable[] calldata recipients) internal pure returns (address[] memory) {
-    address[] memory _recipients = new address[](recipients.length);
-    for (uint256 i = 0; i < recipients.length;) {
+    uint256 rLength = recipients.length;
+    address[] memory _recipients = new address[](rLength);
+    for (uint256 i = 0; i < rLength;) {
       _recipients[i] = recipients[i];
        unchecked {
         ++i;
