@@ -56,7 +56,7 @@ contract ETHSplitter is ReentrancyGuard {
     emit EthSplit(msg.sender, msg.value, _convertToAddresses(recipients), amounts);
 
     if (remainingAmount > 0) {
-      (bool success, ) = msg.sender.call{value: remainingAmount, gas: 2200}("");
+      (bool success, ) = msg.sender.call{value: remainingAmount, gas: 20000}("");
       if (!success) revert TRANSFER_FAILED();
     }
   }
@@ -79,7 +79,7 @@ contract ETHSplitter is ReentrancyGuard {
       if (i == 0) {
         amountToSend = amountToSend + remainingAmount;
       }
-      (bool success, ) = recipients[i].call{value: amountToSend, gas: 2200}("");
+      (bool success, ) = recipients[i].call{value: amountToSend, gas: 20000}("");
       if (!success) revert TRANSFER_FAILED();
       unchecked {
         ++i;
@@ -155,7 +155,7 @@ contract ETHSplitter is ReentrancyGuard {
 
       totalAmount = totalAmount + amounts[i];
 
-      (bool success, ) = recipients[i].call{value: amounts[i], gas: 2200}("");
+      (bool success, ) = recipients[i].call{value: amounts[i], gas: 20000}("");
       if (!success) revert TRANSFER_FAILED();
       unchecked {
         ++i;
@@ -214,7 +214,7 @@ contract ETHSplitter is ReentrancyGuard {
    */
   function withdraw(IERC20 token) external onlyOwner {
     if (address(token) == address(0)) {
-      (bool success, ) = _owner.call{value: address(this).balance, gas: 2200}("");
+      (bool success, ) = _owner.call{value: address(this).balance, gas: 20000}("");
       if (!success) revert TRANSFER_FAILED();
     } else {
       token.transfer(_owner, token.balanceOf(address(this)));
