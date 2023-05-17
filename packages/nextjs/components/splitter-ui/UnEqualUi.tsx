@@ -58,6 +58,19 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: { splitItem: string
     setAmounts(newAmounts);
   };
 
+  const { writeAsync: splitETH, isMining: splitEthLoading } = useScaffoldContractWrite(
+    "ETHSplitter",
+    "splitETH",
+    [wallets, amountsInWei],
+    totalAmount,
+  );
+
+  const { writeAsync: splitERC20, isMining: splitErc20Loading } = useScaffoldContractWrite(
+    "ETHSplitter",
+    "splitERC20",
+    [tokenContract, wallets, amountsInWei],
+  );
+
   useEffect(() => {
     let totalETH = 0;
     const newAmountsInWei = [];
@@ -71,19 +84,6 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: { splitItem: string
     setAmountsInWei(newAmountsInWei);
     setTotalAmount(totalETH.toFixed(18));
   }, [amounts]);
-
-  const { writeAsync: splitETH, isLoading: splitEthLoading } = useScaffoldContractWrite(
-    "ETHSplitter",
-    "splitETH",
-    [wallets, amountsInWei],
-    totalAmount,
-  );
-
-  const { writeAsync: splitERC20, isLoading: splitErc20Loading } = useScaffoldContractWrite(
-    "ETHSplitter",
-    "splitERC20",
-    [tokenContract, wallets, amountsInWei],
-  );
 
   useEffect(() => {
     for (let index = 0; index < amounts.length; index++) {
@@ -110,8 +110,8 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: { splitItem: string
             <p className="font-semibold  ml-1 my-0 break-words">Recipient Wallets</p>
 
             {wallets.map((wallet, index) => (
-              <div key={index}>
-                <div key={index} className="flex gap-2 mt-5 w-full ">
+              <div  key={index}>
+                <div className="flex gap-2 mt-1 w-full ">
                   <div className="w-11/12 flex gap-2 items-center">
                     <span className="w-11/12">
                       <AddressInput

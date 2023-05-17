@@ -31,14 +31,14 @@ const EqualUi = ({ splitItem, account, splitterContract }: { splitItem: string }
 
     setWallets(uniqueAddresses);
   }
-  const { writeAsync: splitEqualETH, isLoading: splitEthLoading } = useScaffoldContractWrite(
+  const { writeAsync: splitEqualETH, isMining: splitEthLoading } = useScaffoldContractWrite(
     "ETHSplitter",
     "splitEqualETH",
     [wallets],
     totalAmount.toString(),
   );
 
-  const { writeAsync: splitEqualERC20, isLoading: splitErc20Loading } = useScaffoldContractWrite(
+  const { writeAsync: splitEqualERC20, isMining: splitErc20Loading } = useScaffoldContractWrite(
     "ETHSplitter",
     "splitEqualERC20",
     [tokenContract, wallets, totalAmount.toString()],
@@ -95,7 +95,7 @@ const EqualUi = ({ splitItem, account, splitterContract }: { splitItem: string }
               className={`flex items-center justify-between border-2 border-base-300 bg-base-200 rounded-xl text-accent w-full`}
             >
               <textarea
-                placeholder="Seperate each address with a comma"
+                placeholder="Seperate each address with a comma, space or new line"
                 // value={wallets}
                 onChange={e => addMultipleAddress(e.target.value)}
                 className="textarea rounded-none textarea-ghost focus:outline-none focus:bg-transparent focus:text-gray-400  min-h-[11.2rem] border w-full font-medium placeholder:text-accent/50 text-gray-400"

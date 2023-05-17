@@ -2,24 +2,39 @@ import React, { useEffect, useState } from "react";
 import { readContract } from "@wagmi/core";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { ethers } from "ethers";
+import { formatUnits } from "ethers/lib/utils.js";
 import { erc20ABI } from "wagmi";
 
-const TokenData = ({ splitErc20Loading, account, splitterContract, setTokenContract, tokenContract }: { splitErc20Loading: boolean }) => {
-
+const TokenData = ({
+  splitErc20Loading,
+  account,
+  splitterContract,
+  setTokenContract,
+  tokenContract,
+}: {
+  splitErc20Loading: boolean;
+}) => {
   const [tokenName, setTokenName] = useState("");
   const [tokenAllowance, setTokenAllowance] = useState("");
   const [tokenBalance, setTokenBalance] = useState("");
-  const approveAmount = "1000000000000000000000";
+  const [tokenDecimals, settokenDecimals] = useState("");
+  const approveAmount = "1000000000";
 
   const approve = async () => {
     try {
+      let amount = BigInt(approveAmount);
+      for (let i = 0; i < parseInt(tokenDecimals); i++) {
+        amount *= BigInt(10);
+      }
+
       const config = await prepareWriteContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "approve",
-        args: [splitterContract, approveAmount],
+        args: [splitterContract, String(amount)],
       });
       await writeContract(config);
+      await getTokenData();
     } catch (error) {
       console.log(error);
     }
@@ -32,8 +47,14 @@ const TokenData = ({ splitErc20Loading, account, splitterContract, setTokenContr
         abi: erc20ABI,
         functionName: "name",
       });
-      setTokenName(name);
-      console.log(splitterContract);
+
+      let decimals: any = await readContract({
+        address: tokenContract,
+        abi: erc20ABI,
+        functionName: "decimals",
+      });
+      settokenDecimals(decimals);
+
       let allowance = await readContract({
         address: tokenContract,
         abi: erc20ABI,
@@ -41,8 +62,7 @@ const TokenData = ({ splitErc20Loading, account, splitterContract, setTokenContr
         args: [account.address.toString(), splitterContract],
       });
       allowance = allowance.toHexString();
-      allowance = parseInt(allowance, 16);
-      setTokenAllowance(allowance.toLocaleString());
+      allowance = formatUnits(allowance, decimals);
 
       let balance: any = await readContract({
         address: tokenContract,
@@ -52,8 +72,13 @@ const TokenData = ({ splitErc20Loading, account, splitterContract, setTokenContr
       });
       balance = ethers.utils.formatEther(balance, "ether");
       setTokenBalance(balance.toLocaleString());
+      setTokenName(name);
+      setTokenAllowance(allowance.toLocaleString());
     } catch (error) {
       console.log(error);
+      setTokenBalance("");
+      setTokenName("");
+      setTokenAllowance("");
     }
   };
 
@@ -78,9 +103,18 @@ const TokenData = ({ splitErc20Loading, account, splitterContract, setTokenContr
           </div>
         </div>
         <div className="flex flex-col space-y-1 w-full my-1">
-          <p className="font-semibold  ml-1 my-0 break-words">Token Name: {tokenName} </p>
-          <p className="font-semibold  ml-1 my-0 break-words ">Token Balance: {tokenBalance} </p>
-          <p className="font-semibold  ml-1 my-0 break-words ">Token Allowance: {tokenAllowance} </p>
+          <div className="flex justify-around bg-base-200 w-full mx-auto m-1 rounded-full break-words md:text-base text-xs p-2">
+            <span className="flex flex-col items-center  ">
+              <span>Token Name: </span> <span>{tokenName}</span>
+            </span>
+            <span className="flex flex-col items-center">
+              <span>Balance: </span> <span>{tokenBalance}</span>
+            </span>
+            <span className=" flex flex-col items-center">
+              {" "}
+              <span>Allowance: </span> <span>{tokenAllowance}</span>{" "}
+            </span>
+          </div>
           <div
             className={`flex items-center justify-between border-2 border-base-300 bg-base-200 rounded-full text-accent w-full`}
           >
