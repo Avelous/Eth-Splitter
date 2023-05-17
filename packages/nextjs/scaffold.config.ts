@@ -13,7 +13,7 @@ export type ScaffoldConfig = {
 
 const scaffoldConfig = {
   // The network where your DApp lives in
-  targetNetwork: chains.mainnet,
+  targetNetwork: chains.hardhat,
 
   // The interval at which your front-end polls the RPC servers for new data
   // it has no effect on the local network
@@ -38,7 +38,7 @@ const scaffoldConfig = {
    * 1. If the user was connected into a wallet before, on page reload reconnect automatically
    * 2. If user is not connected to any wallet:  On reload, connect to burner wallet if burnerWallet.enabled is true && burnerWallet.onlyLocal is false
    */
-  // walletAutoConnect: true,
+  walletAutoConnect: false,
 } satisfies ScaffoldConfig;
 
 export default scaffoldConfig;

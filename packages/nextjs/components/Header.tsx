@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Chain, useAccount, useNetwork, useSigner, useSwitchNetwork } from "wagmi";
+import { Chain, useNetwork, useSwitchNetwork } from "wagmi";
 import * as chains from "wagmi/chains";
 import { Bars3Icon, BugAntIcon, SparklesIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
@@ -37,7 +37,7 @@ export const Header = () => {
     useCallback(() => setIsDrawerOpen(false), []),
   );
 
-  const { chains, switchNetwork } = useSwitchNetwork();
+  const { chains: switchChains, switchNetwork } = useSwitchNetwork();
   const { chain } = useNetwork();
 
   const [chainData, setChainData] = useState<Chain[]>();
@@ -49,10 +49,10 @@ export const Header = () => {
   }
 
   useEffect(() => {
-    if (chains.length > 0) {
-      setChainData(chains.filter(item => [11155111, 31337, 1].includes(item.id)));
+    if (switchChains.length > 0) {
+      setChainData(switchChains.filter(item => [11155111, 31337, 1].includes(item.id)));
     }
-  }, [chains]);
+  }, [switchChains]);
 
   useEffect(() => {
     if (chain) {
@@ -69,12 +69,6 @@ export const Header = () => {
         <NavLink href="/debug">
           <BugAntIcon className="h-4 w-4" />
           Debug Contracts
-        </NavLink>
-      </li>
-      <li>
-        <NavLink href="/example-ui">
-          <SparklesIcon className="h-4 w-4" />
-          Example UI
         </NavLink>
       </li>
     </>
@@ -110,21 +104,23 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-eth</span>
+            <span className="font-bold leading-tight">ETH & Token Splitter</span>
             <span className="text-xs">Ethereum dev stack</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
       </div>
       <div className="navbar-end flex-grow mr-4">
-        {/* <select
-          defaultValue="select"
-          // disabled={isSharedWallet}
-          className="select select-sm  max-w-xs"
+        <select
+          className="select select-sm sm:w-fit w-20 mr-2"
           style={{ borderWidth: 1, borderColor: chain && (chain as any).color }}
           onChange={event => {
-            switchNetwork?.(+event.target.value);
-            changeTargetNetwork(chains[event.target.value]);
+            const [name, id] = event.target.value.split("|");
+            switchNetwork?.(+id);
+            console.log(name);
+            name === "Ethereum"
+              ? changeTargetNetwork(chains["mainnet"])
+              : changeTargetNetwork(chains[name.toLowerCase()]);
           }}
         >
           <option disabled>Select network</option>
@@ -132,14 +128,14 @@ export const Header = () => {
             chainData.map(data => (
               <option
                 key={data.name}
-                value={data.id}
+                value={`${data.name}|${data.id}`}
                 style={{ color: (data as any).color }}
                 selected={selectedNetwork === data.name}
               >
                 {data.name}
               </option>
             ))}
-        </select> */}
+        </select>
         <RainbowKitCustomConnectButton />
         <FaucetButton />
       </div>
