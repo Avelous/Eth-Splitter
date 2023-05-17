@@ -12,4 +12,4 @@ artifacts
 
 deployments
 
-hardhat.config.ts
+# hardhat.config.ts
