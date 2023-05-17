@@ -37,4 +37,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 
-scaffold.config.ts
+# scaffold.config.ts
