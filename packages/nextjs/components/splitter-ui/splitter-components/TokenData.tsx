@@ -4,6 +4,8 @@ import { prepareWriteContract, writeContract } from "@wagmi/core";
 import { ethers } from "ethers";
 import { formatUnits } from "ethers/lib/utils.js";
 import { erc20ABI } from "wagmi";
+import { Spinner } from "~~/components/Spinner";
+import { useTransactor } from "~~/hooks/scaffold-eth";
 
 const TokenData = ({
   splitErc20Loading,
@@ -19,6 +21,10 @@ const TokenData = ({
   const [tokenBalance, setTokenBalance] = useState("");
   const [tokenDecimals, settokenDecimals] = useState("");
   const approveAmount = "1000000000";
+  const [errorMsg, setErrorMsg] = useState("");
+  const [dataLoading, setDataLoading] = useState(false);
+
+  const writeTx = useTransactor();
 
   const approve = async () => {
     try {
@@ -33,7 +39,7 @@ const TokenData = ({
         functionName: "approve",
         args: [splitterContract, String(amount)],
       });
-      await writeContract(config);
+      await writeTx(writeContract(config));
       await getTokenData();
     } catch (error) {
       console.log(error);
@@ -42,13 +48,17 @@ const TokenData = ({
 
   const getTokenData = async () => {
     try {
+      setTokenBalance("");
+      setTokenName("");
+      setTokenAllowance("");
+      setDataLoading(true);
       const name = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "name",
       });
 
-      let decimals: any = await readContract({
+      const decimals: any = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "decimals",
@@ -59,7 +69,7 @@ const TokenData = ({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "allowance",
-        args: [account.address.toString(), splitterContract],
+        args: [account.address, splitterContract],
       });
       allowance = allowance.toHexString();
       allowance = formatUnits(allowance, decimals);
@@ -74,11 +84,19 @@ const TokenData = ({
       setTokenBalance(balance.toLocaleString());
       setTokenName(name);
       setTokenAllowance(allowance.toLocaleString());
+      setErrorMsg("");
+      setDataLoading(false);
     } catch (error) {
       console.log(error);
       setTokenBalance("");
       setTokenName("");
       setTokenAllowance("");
+      setDataLoading(false);
+      if (account.address === undefined) {
+        setErrorMsg("Please connect your wallet");
+      } else {
+        setErrorMsg("Invalid token contract");
+      }
     }
   };
 
@@ -101,18 +119,19 @@ const TokenData = ({
               className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400  border w-full font-medium placeholder:text-accent/50 text-gray-400"
             />
           </div>
+          {errorMsg !== "" && tokenContract !== "" && <p className="ml-2 text-[0.75rem] text-red-400">{errorMsg}</p>}
         </div>
         <div className="flex flex-col space-y-1 w-full my-1">
           <div className="flex justify-around bg-base-200 w-full mx-auto m-1 rounded-full break-words md:text-base text-xs p-2">
             <span className="flex flex-col items-center  ">
-              <span>Token Name: </span> <span>{tokenName}</span>
+              <span>Token Name: </span> <span>{tokenName}</span> {dataLoading && <Spinner />}
             </span>
             <span className="flex flex-col items-center">
-              <span>Balance: </span> <span>{tokenBalance}</span>
+              <span>Balance: </span> <span>{tokenBalance}</span> {dataLoading && <Spinner />}
             </span>
             <span className=" flex flex-col items-center">
-              {" "}
-              <span>Allowance: </span> <span>{tokenAllowance}</span>{" "}
+              <span>Allowance: </span> <span>{tokenAllowance}</span>
+              {dataLoading && <Spinner />}
             </span>
           </div>
           <div
