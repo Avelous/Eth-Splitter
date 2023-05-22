@@ -2,6 +2,7 @@
 
 ![Screenshot_658](https://github.com/Avelous/Eth-Splitter/assets/86206128/38ab22cf-5ad4-475d-bf74-1df80affc81a)
 
+[ethsplitter.vercel.app/](https://ethsplitter.vercel.app/)
 ETHSplitter is a smart contract and a NextJs App built with [Scaffold ETH](https://github.com/scaffold-eth/scaffold-eth-2) to split Ethereum (ETH) or ERC20 tokens between multiple recipients. It provides functionality to distribute ETH or ERC20 tokens according to specified amounts or equally among recipients.
 
 **Disclaimer:** This contract is a prototype and intended for research and development purposes only. Use it at your own discretion.
