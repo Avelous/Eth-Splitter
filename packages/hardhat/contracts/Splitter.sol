@@ -63,6 +63,7 @@ contract ETHSplitter is ReentrancyGuard {
 
   /**
    * @notice Splits the ETH equally amongst the given recipients
+   * @dev The contract gracefully adds any leftover dust to the amount to be received by the first recipient in the input array. 
    * @param recipients The noble recipients of the ETH
    */
   function splitEqualETH(address payable[] calldata recipients) external payable nonReentrant {
@@ -132,7 +133,6 @@ contract ETHSplitter is ReentrancyGuard {
 
   /**
    * @notice Internal function to split the ETH amongst the given recipients, according to the specified amounts
-   * @dev The contract gracefully returns any leftover dust to the sender
    * @param recipients The noble recipients of the ETH
    * @param amounts The amounts each recipient shall receive
    * @param totalAvailable The total available ETH to be split
