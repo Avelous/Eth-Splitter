@@ -5,7 +5,6 @@
 [ethsplitter.vercel.app](https://ethsplitter.vercel.app/) 
 
 <br></br> 
-
 ETHSplitter is a
 smart contract and a NextJs App built with
 [Scaffold ETH](https://github.com/scaffold-eth/scaffold-eth-2) to split Ethereum
