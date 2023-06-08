@@ -214,4 +214,4 @@ please follow these steps:
 5. Submit a pull request, describing your changes in detail and referencing any
    relevant issues.
 
-Built with [Sacffold ETH](https://github.com/scaffold-eth/scaffold-eth-2)
+Built with [Scaffold ETH](https://github.com/scaffold-eth/scaffold-eth-2)
