@@ -13,6 +13,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
  */
 
 contract ETHSplitter is ReentrancyGuard {
+  using SafeERC20 for IERC20;
   address immutable _owner;
 
   // Events
