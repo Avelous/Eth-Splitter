@@ -50,7 +50,7 @@ export const Header = () => {
 
   useEffect(() => {
     if (switchChains.length > 0) {
-      setChainData(switchChains.filter(item => [1, 11155111, 137].includes(item.id)));
+      setChainData(switchChains.filter(item => [1, 11155111, 137, 80001].includes(item.id)));
     }
   }, [switchChains]);
 
@@ -120,6 +120,8 @@ export const Header = () => {
             console.log(name);
             name === "Ethereum"
               ? changeTargetNetwork(chains["mainnet"])
+              : name === "Polygon Mumbai"
+              ? changeTargetNetwork(chains["polygonMumbai"])
               : changeTargetNetwork(chains[name.toLowerCase()]);
           }}
         >
