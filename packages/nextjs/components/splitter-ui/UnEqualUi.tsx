@@ -4,8 +4,9 @@ import TokenData from "./splitter-components/TokenData";
 import { ethers } from "ethers";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
 
-const UnEqualUi = ({ splitItem, account, splitterContract }: { splitItem: string }) => {
+const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [wallets, setWallets] = useState<string[]>([""]);
   const [amounts, setAmounts] = useState<string[]>([""]);
   const [amountsInWei, setAmountsInWei] = useState<any[]>([]);
@@ -110,7 +111,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: { splitItem: string
             <p className="font-semibold  ml-1 my-0 break-words">Recipient Wallets</p>
 
             {wallets.map((wallet, index) => (
-              <div  key={index}>
+              <div key={index}>
                 <div className="flex gap-2 mt-1 w-full ">
                   <div className="w-11/12 flex gap-2 items-center">
                     <span className="w-11/12">

@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import TokenData from "./splitter-components/TokenData";
 import { ethers } from "ethers";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
+import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
 
-const EqualUi = ({ splitItem, account, splitterContract }: { splitItem: string }) => {
+const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [amount, setamount] = useState("");
   const [wallets, setWallets] = useState<string[]>([]);
 
@@ -106,7 +107,7 @@ const EqualUi = ({ splitItem, account, splitterContract }: { splitItem: string }
           <div className="my-[10px] w-full space-y-4">
             <button
               type="button"
-              disabled={wallets.length <= 1 || totalAmount === 0}
+              disabled={wallets.length <= 1 || totalAmount === "0"}
               onClick={async () => {
                 splitItem === "split-eth" ? await splitEqualETH() : await splitEqualERC20();
               }}
