@@ -20,7 +20,14 @@ const configuredNetwork = getTargetNetwork();
 const burnerConfig = scaffoldConfig.burnerWallet;
 
 // We always want to have mainnet enabled (ENS resolution, ETH price, etc). But only once.
-const enabledChains = [configuredNetwork, chains.sepolia, chains.mainnet, chains.polygon, chains.polygonMumbai];
+const enabledChains = [
+  configuredNetwork,
+  chains.sepolia,
+  chains.mainnet,
+  chains.polygon,
+  chains.polygonMumbai,
+  chains.optimism,
+];
 
 /**
  * Chains for the app

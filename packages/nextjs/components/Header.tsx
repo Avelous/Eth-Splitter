@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Chain, useNetwork, useSwitchNetwork } from "wagmi";
 import * as chains from "wagmi/chains";
-import { Bars3Icon, BugAntIcon, SparklesIcon } from "@heroicons/react/24/outline";
+import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
 import scaffoldConfig from "~~/scaffold.config";
@@ -48,9 +48,11 @@ export const Header = () => {
     scaffoldConfig.targetNetwork = newNetwork;
   }
 
+  console.log(switchChains);
+
   useEffect(() => {
     if (switchChains.length > 0) {
-      setChainData(switchChains.filter(item => [1, 11155111, 137, 80001].includes(item.id)));
+      setChainData(switchChains.filter(item => [1, 11155111, 137, 80001, 10].includes(item.id)));
     }
   }, [switchChains]);
 
