@@ -31,12 +31,12 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex items-center flex-col flex-grow pt-10 ">
-        <ul className="flex gap-2 p-4 bg-base-300 rounded-full ">
+        <ul className="flex gap-2 px-4 py-2 bg-base-300 rounded-full ">
           <li
             onClick={() => handleItemClick("split-eth")}
             className={
               activeItem === "split-eth"
-                ? "bg-base-100 p-2 rounded-full cursor-pointer"
+                ? "bg-accent p-2 rounded-full cursor-pointer"
                 : " p-2 rounded-full hover:scale-105 cursor-pointer"
             }
           >
@@ -46,7 +46,7 @@ const Home: NextPage = () => {
             onClick={() => handleItemClick("split-tokens")}
             className={
               activeItem === "split-tokens"
-                ? "bg-base-100 p-2 rounded-full cursor-pointer"
+                ? "bg-accent p-2 rounded-full cursor-pointer"
                 : " p-2 rounded-full hover:scale-105 cursor-pointer"
             }
           >
