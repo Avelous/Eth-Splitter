@@ -30,13 +30,27 @@ const Home: NextPage = () => {
         <meta name="description" content="Created with 🏗 scaffold-eth-2" />
       </Head>
 
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <ul className="menu menu-horizontal bg-base-300 rounded-full ">
-          <li onClick={() => handleItemClick("split-eth")}>
-            <a className={activeItem === "split-eth" ? "active" : ""}>Split ETH</a>
+      <div className="flex items-center flex-col flex-grow pt-10 ">
+        <ul className="flex gap-2 p-4 bg-base-300 rounded-full ">
+          <li
+            onClick={() => handleItemClick("split-eth")}
+            className={
+              activeItem === "split-eth"
+                ? "bg-base-100 p-2 rounded-full cursor-pointer"
+                : " p-2 rounded-full hover:scale-105 cursor-pointer"
+            }
+          >
+            <a>Split ETH</a>
           </li>
-          <li onClick={() => handleItemClick("split-tokens")}>
-            <a className={activeItem === "split-tokens" ? "active" : ""}>Split Tokens</a>
+          <li
+            onClick={() => handleItemClick("split-tokens")}
+            className={
+              activeItem === "split-tokens"
+                ? "bg-base-100 p-2 rounded-full cursor-pointer"
+                : " p-2 rounded-full hover:scale-105 cursor-pointer"
+            }
+          >
+            <a>Split Tokens</a>
           </li>
         </ul>
 
