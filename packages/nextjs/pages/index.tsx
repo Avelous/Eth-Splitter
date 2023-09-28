@@ -31,7 +31,7 @@ const Home: NextPage = () => {
       </Head>
 
       <div className="flex items-center flex-col flex-grow pt-10">
-        <ul className="menu menu-horizontal bg-base-100 rounded-box activemenu">
+        <ul className="menu menu-horizontal bg-base-300 rounded-full ">
           <li onClick={() => handleItemClick("split-eth")}>
             <a className={activeItem === "split-eth" ? "active" : ""}>Split ETH</a>
           </li>
