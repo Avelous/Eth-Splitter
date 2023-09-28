@@ -9,6 +9,8 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [wallets, setWallets] = useState<string[]>([]);
 
   const [totalAmount, setTotalAmount] = useState("");
+  const [totalTokenAmount, setTotalTokenAmount] = useState("");
+  const [totalEthAmount, setTotalEthAmount] = useState("");
   const [tokenContract, setTokenContract] = useState("");
 
   function addMultipleAddress(value: string) {
@@ -36,13 +38,13 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     contractName: "ETHSplitter",
     functionName: "splitEqualETH",
     args: [wallets],
-    value: totalAmount.toString() as `${number}`,
+    value: totalEthAmount.toString() as `${number}`,
   });
 
   const { writeAsync: splitEqualERC20, isMining: splitErc20Loading } = useScaffoldContractWrite({
     contractName: "ETHSplitter",
     functionName: "splitEqualERC20",
-    args: [tokenContract, wallets, BigInt(totalAmount)],
+    args: [tokenContract, wallets, BigInt(totalTokenAmount)],
   });
 
   useEffect(() => {
@@ -55,8 +57,10 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     }
     if (splitItem === "split-tokens") {
       totalAmount = parseEther(totalAmount.toFixed(18));
+      setTotalTokenAmount(totalAmount);
     } else {
       totalAmount = totalAmount.toFixed(18);
+      setTotalEthAmount(totalAmount);
     }
     setTotalAmount(totalAmount);
   }, [amount, wallets, splitItem]);

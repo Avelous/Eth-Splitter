@@ -1,10 +1,14 @@
 import React, { useCallback, useRef, useState } from "react";
+import { useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { Chain, useNetwork, useSwitchNetwork } from "wagmi";
+import * as chains from "wagmi/chains";
 import { Bars3Icon, BugAntIcon } from "@heroicons/react/24/outline";
 import { FaucetButton, RainbowKitCustomConnectButton } from "~~/components/scaffold-eth";
 import { useOutsideClick } from "~~/hooks/scaffold-eth";
+import scaffoldConfig from "~~/scaffold.config";
 
 const NavLink = ({ href, children }: { href: string; children: React.ReactNode }) => {
   const router = useRouter();
@@ -33,6 +37,31 @@ export const Header = () => {
     burgerMenuRef,
     useCallback(() => setIsDrawerOpen(false), []),
   );
+
+  const { chains: switchChains, switchNetwork } = useSwitchNetwork();
+  const { chain } = useNetwork();
+
+  const [chainData, setChainData] = useState<Chain[]>();
+
+  const [selectedNetwork, setSelectedNetwork] = useState<string>("");
+
+  function changeTargetNetwork(newNetwork: chains.Chain): void {
+    scaffoldConfig.targetNetwork = newNetwork;
+  }
+
+  console.log(switchChains);
+
+  useEffect(() => {
+    if (switchChains.length > 0) {
+      setChainData(switchChains.filter(item => [1, 11155111, 137, 80001, 10].includes(item.id)));
+    }
+  }, [switchChains]);
+
+  useEffect(() => {
+    if (chain) {
+      setSelectedNetwork(chain.name);
+    }
+  }, [chain]);
 
   const navLinks = (
     <>
@@ -85,6 +114,33 @@ export const Header = () => {
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
       </div>
       <div className="navbar-end flex-grow mr-4">
+        <select
+          className="select select-sm sm:w-fit w-20 mr-2"
+          style={{ borderWidth: 1, borderColor: chain && (chain as any).color }}
+          onChange={event => {
+            const [name, id] = event.target.value.split("|");
+            switchNetwork?.(+id);
+            console.log(name);
+            name === "Ethereum"
+              ? changeTargetNetwork(chains["mainnet"])
+              : name === "Polygon Mumbai"
+              ? changeTargetNetwork(chains["polygonMumbai"])
+              : changeTargetNetwork(chains[name.toLowerCase()]);
+          }}
+        >
+          <option disabled>Select network</option>
+          {chainData &&
+            chainData.map(data => (
+              <option
+                key={data.name}
+                value={`${data.name}|${data.id}`}
+                style={{ color: (data as any).color }}
+                selected={selectedNetwork === data.name}
+              >
+                {data.name}
+              </option>
+            ))}
+        </select>
         <RainbowKitCustomConnectButton />
         <FaucetButton />
       </div>
