@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { readContract } from "@wagmi/core";
 import { prepareWriteContract, writeContract } from "@wagmi/core";
-import { BigNumber, ethers } from "ethers";
-import { formatUnits } from "ethers/lib/utils.js";
+import { formatEther, formatUnits } from "viem";
 import { erc20ABI } from "wagmi";
 import { Spinner } from "~~/components/Spinner";
 import { useTransactor } from "~~/hooks/scaffold-eth";
@@ -36,9 +35,9 @@ const TokenData = ({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "approve",
-        args: [splitterContract, BigNumber.from(amount.toString())],
+        args: [splitterContract, BigInt(amount.toString())],
       });
-      await writeTx(writeContract(config));
+      await writeTx(() => writeContract(config));
       await getTokenData();
     } catch (error) {
       console.log(error);
@@ -57,21 +56,21 @@ const TokenData = ({
         functionName: "name",
       });
 
-      const decimals: any = await readContract({
+      const decimals = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "decimals",
       });
-      settokenDecimals(decimals);
+      settokenDecimals(decimals.toString());
 
-      let allowance: BigNumber | string = await readContract({
+      let allowance: bigint | string = await readContract({
         address: tokenContract,
         abi: erc20ABI,
         functionName: "allowance",
         args: [account.address as string, splitterContract],
       });
-      allowance = allowance.toHexString();
-      allowance = formatUnits(allowance, decimals);
+      allowance = allowance.toString();
+      allowance = formatUnits(BigInt(allowance), decimals);
 
       let balance: any = await readContract({
         address: tokenContract,
@@ -79,7 +78,7 @@ const TokenData = ({
         functionName: "balanceOf",
         args: [account.address as string],
       });
-      balance = ethers.utils.formatEther(balance);
+      balance = formatEther(balance);
       setTokenBalance(balance.toLocaleString());
       setTokenName(name);
       setTokenAllowance(allowance.toLocaleString());

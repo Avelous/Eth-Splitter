@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { AddressInput } from "../scaffold-eth";
 import TokenData from "./splitter-components/TokenData";
-import { ethers } from "ethers";
+import { isAddress, parseUnits } from "viem";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
@@ -59,18 +59,18 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     setAmounts(newAmounts);
   };
 
-  const { writeAsync: splitETH, isMining: splitEthLoading } = useScaffoldContractWrite(
-    "ETHSplitter",
-    "splitETH",
-    [wallets, amountsInWei],
-    totalAmount,
-  );
+  const { writeAsync: splitETH } = useScaffoldContractWrite({
+    contractName: "ETHSplitter",
+    functionName: "splitETH",
+    args: [wallets, amountsInWei],
+    value: totalAmount as `${number}`,
+  });
 
-  const { writeAsync: splitERC20, isMining: splitErc20Loading } = useScaffoldContractWrite(
-    "ETHSplitter",
-    "splitERC20",
-    [tokenContract, wallets, amountsInWei],
-  );
+  const { writeAsync: splitERC20, isMining: splitErc20Loading } = useScaffoldContractWrite({
+    contractName: "ETHSplitter",
+    functionName: "splitERC20",
+    args: [tokenContract, wallets, amountsInWei],
+  });
 
   useEffect(() => {
     let totalETH = 0;
@@ -80,7 +80,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
         return;
       }
       totalETH += parseFloat(amounts[index]);
-      newAmountsInWei.push(ethers.utils.parseUnits(amounts[index].toString(), "ether"));
+      newAmountsInWei.push(parseUnits(amounts[index].toString(), 18));
     }
     setAmountsInWei(newAmountsInWei);
     setTotalAmount(totalETH.toFixed(18));
@@ -143,7 +143,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                     </button>
                   )}
                 </div>
-                {!ethers.utils.isAddress(wallet) && wallet !== "" && (
+                {!isAddress(wallet) && wallet !== "" && (
                   <p className="ml-2 text-[0.75rem] text-red-400">address is invalid</p>
                 )}
               </div>
@@ -162,7 +162,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                 amounts.length != wallets.length ||
                 amounts.includes("") ||
                 wallets.includes("") ||
-                wallets.some(wallet => !ethers.utils.isAddress(wallet))
+                wallets.some(wallet => !isAddress(wallet))
               }
               onClick={async () => {
                 splitItem === "split-tokens" ? await splitERC20() : await splitETH();
