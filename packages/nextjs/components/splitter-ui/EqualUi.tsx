@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import TokenData from "./splitter-components/TokenData";
-import { ethers } from "ethers";
+import { parseEther } from "viem";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
 
@@ -32,18 +32,18 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
 
     setWallets(uniqueAddresses);
   }
-  const { writeAsync: splitEqualETH, isMining: splitEthLoading } = useScaffoldContractWrite(
-    "ETHSplitter",
-    "splitEqualETH",
-    [wallets],
-    totalAmount.toString(),
-  );
+  const { writeAsync: splitEqualETH } = useScaffoldContractWrite({
+    contractName: "ETHSplitter",
+    functionName: "splitEqualETH",
+    args: [wallets],
+    value: totalAmount.toString() as `${number}`,
+  });
 
-  const { writeAsync: splitEqualERC20, isMining: splitErc20Loading } = useScaffoldContractWrite(
-    "ETHSplitter",
-    "splitEqualERC20",
-    [tokenContract, wallets, totalAmount.toString()],
-  );
+  const { writeAsync: splitEqualERC20, isMining: splitErc20Loading } = useScaffoldContractWrite({
+    contractName: "ETHSplitter",
+    functionName: "splitEqualERC20",
+    args: [tokenContract, wallets, BigInt(totalAmount)],
+  });
 
   useEffect(() => {
     let totalAmount: any = 0;
@@ -54,7 +54,7 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
       totalAmount += parseFloat(amount);
     }
     if (splitItem === "split-tokens") {
-      totalAmount = ethers.utils.parseEther(totalAmount.toFixed(18));
+      totalAmount = parseEther(totalAmount.toFixed(18));
     } else {
       totalAmount = totalAmount.toFixed(18);
     }
