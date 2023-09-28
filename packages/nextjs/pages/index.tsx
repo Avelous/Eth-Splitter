@@ -36,7 +36,7 @@ const Home: NextPage = () => {
             onClick={() => handleItemClick("split-eth")}
             className={
               activeItem === "split-eth"
-                ? "bg-accent p-2 rounded-full cursor-pointer"
+                ? "bg-accent py-2 px-3 rounded-full cursor-pointer"
                 : " p-2 rounded-full hover:scale-105 cursor-pointer"
             }
           >
@@ -46,7 +46,7 @@ const Home: NextPage = () => {
             onClick={() => handleItemClick("split-tokens")}
             className={
               activeItem === "split-tokens"
-                ? "bg-accent p-2 rounded-full cursor-pointer"
+                ? "bg-accent py-2 px-3 rounded-full cursor-pointer"
                 : " p-2 rounded-full hover:scale-105 cursor-pointer"
             }
           >
