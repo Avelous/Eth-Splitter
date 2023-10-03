@@ -53,7 +53,7 @@ export const Header = () => {
 
   useEffect(() => {
     if (switchChains.length > 0) {
-      setChainData(switchChains.filter(item => [1, 11155111, 137, 80001, 10].includes(item.id)));
+      setChainData(switchChains.filter(item => [1, 11155111, 137, 10].includes(item.id)));
     }
   }, [switchChains]);
 
@@ -76,6 +76,8 @@ export const Header = () => {
       </li>
     </>
   );
+
+  console.log(chains);
 
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
@@ -125,6 +127,8 @@ export const Header = () => {
               ? changeTargetNetwork(chains["mainnet"])
               : name === "Polygon Mumbai"
               ? changeTargetNetwork(chains["polygonMumbai"])
+              : name === "OP Mainnet"
+              ? changeTargetNetwork(chains["optimism"])
               : changeTargetNetwork(chains[name.toLowerCase()]);
           }}
         >
