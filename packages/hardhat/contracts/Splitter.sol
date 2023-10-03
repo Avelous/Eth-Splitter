@@ -17,10 +17,10 @@ contract ETHSplitter is ReentrancyGuard {
   address immutable _owner;
 
   // Events
-  event EthSplit(address indexed sender, uint256 totalAmount, address[] recipients, uint256[] amounts);
-  event EthSplitEqual(address indexed sender, uint256 totalAmount, address[] recipients);
-  event Erc20Split(address indexed sender, address[] recipients, uint256[] amounts);
-  event Erc20SplitEqual(address indexed sender, uint256 totalAmount, address[] recipients);
+  event EthSplit(address indexed sender, uint256 totalAmount, address payable[] recipients, uint256[] amounts);
+  event EthSplitEqual(address indexed sender, uint256 totalAmount, address payable[] recipients);
+  event Erc20Split(address indexed sender, address payable[] recipients, uint256[] amounts);
+  event Erc20SplitEqual(address indexed sender, uint256 totalAmount, address payable[] recipients);
 
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -54,7 +54,7 @@ contract ETHSplitter is ReentrancyGuard {
    */
   function splitETH(address payable[] calldata recipients, uint256[] calldata amounts) external payable nonReentrant {
     uint256 remainingAmount = _splitETH(recipients, amounts, msg.value);
-    emit EthSplit(msg.sender, msg.value, _convertToAddresses(recipients), amounts);
+    emit EthSplit(msg.sender, msg.value, recipients, amounts);
 
     if (remainingAmount > 0) {
       (bool success, ) = msg.sender.call{value: remainingAmount, gas: 20000}("");
@@ -88,7 +88,7 @@ contract ETHSplitter is ReentrancyGuard {
       }
     }
 
-    emit EthSplitEqual(msg.sender, msg.value, _convertToAddresses(recipients));
+    emit EthSplitEqual(msg.sender, msg.value, recipients);
   }
 
   /**
@@ -97,7 +97,7 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The noble recipients of the ERC20 tokens
    * @param amounts The amounts each recipient shall receive
    */
-  function splitERC20(IERC20 token, address[] calldata recipients, uint256[] calldata amounts) external nonReentrant {
+  function splitERC20(IERC20 token, address payable[] calldata recipients, uint256[] calldata amounts) external nonReentrant {
     _transferTokensFromSenderToRecipients(token, recipients, amounts);
     emit Erc20Split(msg.sender, recipients, amounts);
   }
@@ -108,7 +108,7 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The noble recipients of the ERC20 tokens
    * @param totalAmount The total amount to be shared
    */
-  function splitEqualERC20(IERC20 token, address[] calldata recipients, uint256 totalAmount) external nonReentrant {
+  function splitEqualERC20(IERC20 token, address payable[] calldata recipients, uint256 totalAmount) external nonReentrant {
     uint256 rLength = recipients.length;
 
     if (rLength > 25 || rLength < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
@@ -174,7 +174,7 @@ contract ETHSplitter is ReentrancyGuard {
    */
   function _transferTokensFromSenderToRecipients(
     IERC20 erc20Token,
-    address[] calldata recipients,
+    address payable[] calldata recipients,
     uint256[] calldata amounts
   ) internal {
     uint256 length = recipients.length;
@@ -193,22 +193,6 @@ contract ETHSplitter is ReentrancyGuard {
     }
   }
 
-  /**
-   * @notice Internal function to convert an array of payable addresses to an array of regular addresses
-   * @param recipients The array of payable addresses
-   * @return _recipients The array of regular addresses
-   */
-  function _convertToAddresses(address payable[] calldata recipients) internal pure returns (address[] memory) {
-    uint256 rLength = recipients.length;
-    address[] memory _recipients = new address[](rLength);
-    for (uint256 i = 0; i < rLength;) {
-      _recipients[i] = recipients[i];
-       unchecked {
-        ++i;
-      }
-    }
-    return _recipients;
-  }
 
   /**
    * @notice Withdraws the remaining ETH or ERC20 tokens to the owner's address
