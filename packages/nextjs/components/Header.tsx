@@ -45,7 +45,7 @@ export const Header = () => {
 
   const [selectedNetwork, setSelectedNetwork] = useState<string>("");
 
-  function changeTargetNetwork(newNetwork: chains.Chain): void {
+  function changeTargetNetwork(newNetwork: any): void {
     scaffoldConfig.targetNetwork = newNetwork;
   }
 
@@ -129,7 +129,7 @@ export const Header = () => {
               ? changeTargetNetwork(chains["polygonMumbai"])
               : name === "OP Mainnet"
               ? changeTargetNetwork(chains["optimism"])
-              : changeTargetNetwork(chains[name.toLowerCase()]);
+              : changeTargetNetwork(chains[name.toLowerCase() as keyof typeof chains]);
           }}
         >
           <option disabled>Select network</option>

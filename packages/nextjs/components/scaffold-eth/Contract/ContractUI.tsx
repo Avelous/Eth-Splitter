@@ -1,7 +1,8 @@
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { ContractReadMethods } from "./ContractReadMethods";
 import { ContractVariables } from "./ContractVariables";
 import { ContractWriteMethods } from "./ContractWriteMethods";
+import { useNetwork } from "wagmi";
 import { Spinner } from "~~/components/Spinner";
 import { Address, Balance } from "~~/components/scaffold-eth";
 import { useDeployedContractInfo, useNetworkColor } from "~~/hooks/scaffold-eth";
@@ -18,10 +19,15 @@ type ContractUIProps = {
  **/
 export const ContractUI = ({ contractName, className = "" }: ContractUIProps) => {
   const [refreshDisplayVariables, triggerRefreshDisplayVariables] = useReducer(value => !value, false);
-  const configuredNetwork = getTargetNetwork();
+  const [configuredNetwork, setConfiguredNetwork] = useState(getTargetNetwork());
+  const network = useNetwork();
 
   const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo(contractName);
   const networkColor = useNetworkColor();
+
+  useEffect(() => {
+    setConfiguredNetwork(getTargetNetwork());
+  }, [network.chain]);
 
   if (deployedContractLoading) {
     return (
