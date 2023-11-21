@@ -30,8 +30,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Created with 🏗 scaffold-eth-2" />
       </Head>
 
-      <div className="flex items-center flex-col flex-grow pt-10 ">
-        <ul className="flex gap-2 px-4 py-2 bg-base-300 rounded-full ">
+      <div className="flex items-center flex-col flex-grow pt-36 ">
+        <ul className="flex gap-2 px-4 py-2  rounded-full text-white bg-new_secondary">
           <li
             onClick={() => handleItemClick("split-eth")}
             className={
@@ -56,7 +56,7 @@ const Home: NextPage = () => {
 
         <select
           defaultValue="select"
-          className="select select-bordered w-full max-w-xs border-base-300 focus:border-none mt-4"
+          className="select select-bordered w-full max-w-xs border-gray-300 bg-new_secondary text-white focus:border-none mt-4 "
           onChange={e => setSplitType(e.target.value)}
         >
           <option value="select" disabled>
