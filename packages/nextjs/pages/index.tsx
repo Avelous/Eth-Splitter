@@ -4,7 +4,8 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import EqualUi from "~~/components/splitter-ui/EqualUi";
 import UnEqualUi from "~~/components/splitter-ui/UnEqualUi";
-import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+
+// import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const [activeItem, setActiveItem] = useState("split-eth");
@@ -16,12 +17,12 @@ const Home: NextPage = () => {
   }
 
   let splitterContract: any;
-  let splitterAbi: any;
+  // let splitterAbi: any;
 
-  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo("ETHSplitter");
-  if (deployedContractData) {
-    ({ address: splitterContract, abi: splitterAbi } = deployedContractData);
-  }
+  // const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo("ETHSplitter");
+  // if (deployedContractData) {
+  //   ({ address: splitterContract, abi: splitterAbi } = deployedContractData);
+  // }
 
   return (
     <>
