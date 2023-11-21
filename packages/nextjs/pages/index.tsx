@@ -4,7 +4,8 @@ import type { NextPage } from "next";
 import { useAccount } from "wagmi";
 import EqualUi from "~~/components/splitter-ui/EqualUi";
 import UnEqualUi from "~~/components/splitter-ui/UnEqualUi";
-import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
+
+// import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
 
 const Home: NextPage = () => {
   const [activeItem, setActiveItem] = useState("split-eth");
@@ -16,12 +17,12 @@ const Home: NextPage = () => {
   }
 
   let splitterContract: any;
-  let splitterAbi: any;
+  // let splitterAbi: any;
 
-  const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo("ETHSplitter");
-  if (deployedContractData) {
-    ({ address: splitterContract, abi: splitterAbi } = deployedContractData);
-  }
+  // const { data: deployedContractData, isLoading: deployedContractLoading } = useDeployedContractInfo("ETHSplitter");
+  // if (deployedContractData) {
+  //   ({ address: splitterContract, abi: splitterAbi } = deployedContractData);
+  // }
 
   return (
     <>
@@ -30,8 +31,8 @@ const Home: NextPage = () => {
         <meta name="description" content="Created with 🏗 scaffold-eth-2" />
       </Head>
 
-      <div className="flex items-center flex-col flex-grow pt-10 ">
-        <ul className="flex gap-2 px-4 py-2 bg-base-300 rounded-full ">
+      <div className="flex items-center flex-col flex-grow pt-36 ">
+        <ul className="flex gap-2 px-4 py-2  rounded-full text-white bg-new_secondary">
           <li
             onClick={() => handleItemClick("split-eth")}
             className={
@@ -56,7 +57,7 @@ const Home: NextPage = () => {
 
         <select
           defaultValue="select"
-          className="select select-bordered w-full max-w-xs border-base-300 focus:border-none mt-4"
+          className="select select-bordered w-full max-w-xs border-gray-300 bg-new_secondary text-white focus:border-none mt-4 "
           onChange={e => setSplitType(e.target.value)}
         >
           <option value="select" disabled>
