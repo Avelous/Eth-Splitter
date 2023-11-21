@@ -49,8 +49,6 @@ export const Header = () => {
     scaffoldConfig.targetNetwork = newNetwork;
   }
 
-  console.log(switchChains);
-
   useEffect(() => {
     if (switchChains.length > 0) {
       setChainData(switchChains.filter(item => [1, 11155111, 137, 10].includes(item.id)));
@@ -76,8 +74,6 @@ export const Header = () => {
       </li>
     </>
   );
-
-  console.log(chains);
 
   return (
     <div className="sticky lg:static top-0 navbar bg-base-100 min-h-0 flex-shrink-0 justify-between z-20 shadow-md shadow-secondary px-0 sm:px-2">
@@ -122,7 +118,6 @@ export const Header = () => {
           onChange={event => {
             const [name, id] = event.target.value.split("|");
             switchNetwork?.(+id);
-            console.log(name);
             name === "Ethereum"
               ? changeTargetNetwork(chains["mainnet"])
               : name === "Polygon Mumbai"
