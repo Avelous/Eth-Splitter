@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { CovalentClient } from "@covalenthq/client-sdk";
-import { useAccount } from "wagmi";
+import { useAccount, useNetwork } from "wagmi";
 import { getTargetNetwork } from "~~/utils/scaffold-eth";
 import { getChainNameForCovalent } from "~~/utils/scaffold-eth/ethsplitter";
 
@@ -11,6 +11,8 @@ const useTokenBalances = () => {
   const { address } = useAccount();
   const configuredNetwork = getTargetNetwork();
   const [loading, setLoading] = useState(true);
+
+  const { chain } = useNetwork();
 
   const getTokens = async () => {
     const res = await client.BalanceService.getTokenBalancesForWalletAddress(
@@ -33,7 +35,7 @@ const useTokenBalances = () => {
     setTokenBalances([]);
     getTokens();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address]);
+  }, [address, chain]);
 
   return {
     loading: loading,

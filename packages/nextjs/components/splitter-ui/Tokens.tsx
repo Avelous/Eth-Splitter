@@ -96,7 +96,7 @@ const Tokens = () => {
           </table>
         </div>
       )}
-      {tokenBalances.length == 0 && (
+      {tokenBalances.length == 0 && !loading && (
         <div className="flex justify-center gap-1 mt-5">
           <InformationCircleIcon className="text-sm w-5 cursor-pointer" aria-hidden="true" />
           {isConnected ? "No Tokens Found" : "Connect your Wallet"}

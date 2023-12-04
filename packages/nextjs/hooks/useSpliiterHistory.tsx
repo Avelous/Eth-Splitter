@@ -14,12 +14,16 @@ const useSpliiterHistory = () => {
 
   const getTokenSymbol = async (tokenAddress: string) => {
     if (tokenAddress && tokenAddress != "") {
-      const data = await readContract({
-        address: tokenAddress,
-        abi: erc20ABI,
-        functionName: "symbol",
-      });
-      return data;
+      try {
+        const data = await readContract({
+          address: tokenAddress,
+          abi: erc20ABI,
+          functionName: "symbol",
+        });
+        return data;
+      } catch (error) {
+        console.log(error);
+      }
     }
     return "";
   };
