@@ -1,16 +1,12 @@
 import { Dispatch, SetStateAction } from "react";
-import { GetAccountResult } from "@wagmi/core";
 
-export type UiJsxProps = {
-  splitItem: string;
-  account: GetAccountResult;
-  splitterContract: string;
-};
-
-export type TokenDataJsxProps = {
-  splitErc20Loading: boolean;
-  account: GetAccountResult;
-  splitterContract: string;
-  setTokenContract: Dispatch<SetStateAction<string>>;
-  tokenContract: string;
+export type SplitterProps = {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  isToken: boolean;
+  contractAddr: string;
+  symbol: string;
+  isCustom: boolean;
+  setContractAddr: Dispatch<SetStateAction<string>>;
+  setSymbol: Dispatch<SetStateAction<string>>;
 };

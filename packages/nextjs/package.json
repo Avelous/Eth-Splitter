@@ -14,6 +14,7 @@
     "vercel:yolo": "vercel --build-env NEXT_PUBLIC_IGNORE_BUILD_ERROR=true"
   },
   "dependencies": {
+    "@covalenthq/client-sdk": "^0.6.6",
     "@ethersproject/providers": "^5.7.2",
     "@heroicons/react": "^2.0.11",
     "@rainbow-me/rainbowkit": "1.0.8",

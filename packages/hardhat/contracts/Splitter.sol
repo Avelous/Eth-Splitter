@@ -19,8 +19,8 @@ contract ETHSplitter is ReentrancyGuard {
   // Events
   event EthSplit(address indexed sender, uint256 totalAmount, address payable[] recipients, uint256[] amounts);
   event EthSplitEqual(address indexed sender, uint256 totalAmount, address payable[] recipients);
-  event Erc20Split(address indexed sender, address payable[] recipients, uint256[] amounts);
-  event Erc20SplitEqual(address indexed sender, uint256 totalAmount, address payable[] recipients);
+  event Erc20Split(address indexed sender, address payable[] recipients, uint256[] amounts, IERC20 token);
+  event Erc20SplitEqual(address indexed sender, uint256 totalAmount, address payable[] recipients, IERC20 token);
 
   //*********************************************************************//
   // --------------------------- custom errors ------------------------- //
@@ -64,7 +64,7 @@ contract ETHSplitter is ReentrancyGuard {
 
   /**
    * @notice Splits the ETH equally amongst the given recipients
-   * @dev The contract gracefully adds any leftover dust to the amount to be received by the first recipient in the input array. 
+   * @dev The contract gracefully adds any leftover dust to the amount to be received by the first recipient in the input array.
    * @param recipients The noble recipients of the ETH
    */
   function splitEqualETH(address payable[] calldata recipients) external payable nonReentrant {
@@ -75,7 +75,7 @@ contract ETHSplitter is ReentrancyGuard {
 
     if (rLength > 25 || rLength < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
 
-    for (uint256 i = 0; i < rLength;) {
+    for (uint256 i = 0; i < rLength; ) {
       if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
       uint256 amountToSend = equalAmount;
       if (i == 0) {
@@ -97,9 +97,13 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The noble recipients of the ERC20 tokens
    * @param amounts The amounts each recipient shall receive
    */
-  function splitERC20(IERC20 token, address payable[] calldata recipients, uint256[] calldata amounts) external nonReentrant {
+  function splitERC20(
+    IERC20 token,
+    address payable[] calldata recipients,
+    uint256[] calldata amounts
+  ) external nonReentrant {
     _transferTokensFromSenderToRecipients(token, recipients, amounts);
-    emit Erc20Split(msg.sender, recipients, amounts);
+    emit Erc20Split(msg.sender, recipients, amounts, token);
   }
 
   /**
@@ -108,7 +112,11 @@ contract ETHSplitter is ReentrancyGuard {
    * @param recipients The noble recipients of the ERC20 tokens
    * @param totalAmount The total amount to be shared
    */
-  function splitEqualERC20(IERC20 token, address payable[] calldata recipients, uint256 totalAmount) external nonReentrant {
+  function splitEqualERC20(
+    IERC20 token,
+    address payable[] calldata recipients,
+    uint256 totalAmount
+  ) external nonReentrant {
     uint256 rLength = recipients.length;
 
     if (rLength > 25 || rLength < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
@@ -116,7 +124,7 @@ contract ETHSplitter is ReentrancyGuard {
     uint256 equalAmount = totalAmount / rLength;
 
     uint256 remainingAmount = totalAmount % rLength;
-    for (uint256 i = 0; i < rLength;) {
+    for (uint256 i = 0; i < rLength; ) {
       if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
 
       uint256 amountToSend = equalAmount;
@@ -129,7 +137,7 @@ contract ETHSplitter is ReentrancyGuard {
       }
     }
 
-    emit Erc20SplitEqual(msg.sender, totalAmount, recipients);
+    emit Erc20SplitEqual(msg.sender, totalAmount, recipients, token);
   }
 
   /**
@@ -146,11 +154,11 @@ contract ETHSplitter is ReentrancyGuard {
   ) internal returns (uint256 remainingAmount) {
     uint256 length = recipients.length;
     if (length != amounts.length) revert INVALID_INPUT();
-    
+
     if (length > 25 || length < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
 
     uint256 totalAmount = 0;
-    for (uint256 i = 0; i < length;) {
+    for (uint256 i = 0; i < length; ) {
       if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
       if (amounts[i] == 0) revert INSUFFICIENT_SPLIT_AMOUNT();
 
@@ -182,7 +190,7 @@ contract ETHSplitter is ReentrancyGuard {
     if (length != amounts.length) revert INVALID_INPUT();
     if (length > 25 || length < 2) revert INSUFFICIENT_RECIPIENT_COUNT();
 
-    for (uint256 i = 0; i < length;) {
+    for (uint256 i = 0; i < length; ) {
       if (recipients[i] == address(0)) revert INVALID_RECIPIENT();
       if (amounts[i] == 0) revert INSUFFICIENT_SPLIT_AMOUNT();
 
@@ -192,7 +200,6 @@ contract ETHSplitter is ReentrancyGuard {
       }
     }
   }
-
 
   /**
    * @notice Withdraws the remaining ETH or ERC20 tokens to the owner's address

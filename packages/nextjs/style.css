@@ -1,0 +1,23 @@
+// styles.css or styles.scss
+
+/* For WebKit/Blink browsers (Chrome, Safari, Opera) */
+/* You can customize these styles as needed */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #4f4f4f; /* Color of the thumb */
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #ddd; /* Color of the track */
+}
+
+/* For Firefox */
+/* You can customize these styles as needed */
+.scrollbar {
+  scrollbar-color: #4f4f4f #ddd; /* thumb and track color */
+  scrollbar-width: thin;
+}

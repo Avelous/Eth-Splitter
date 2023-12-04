@@ -51,7 +51,7 @@ export const Header = () => {
 
   useEffect(() => {
     if (switchChains.length > 0) {
-      setChainData(switchChains.filter(item => [1, 11155111, 137, 10].includes(item.id)));
+      setChainData(switchChains.filter(item => [1, 11155111, 137, 10, 31337].includes(item.id)));
     }
   }, [switchChains]);
 
@@ -105,8 +105,8 @@ export const Header = () => {
             <Image alt="SE2 logo" className="cursor-pointer" fill src="/logo.svg" />
           </div>
           <div className="flex flex-col">
-            <span className="font-bold leading-tight">Scaffold-ETH</span>
-            <span className="text-xs">Ethereum dev stack</span>
+            <span className="font-bold leading-tight">Splitter</span>
+            <span className="text-xs">Eth and Token Splitter</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>

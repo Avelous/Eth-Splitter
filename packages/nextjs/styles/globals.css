@@ -2,7 +2,12 @@
 @import "tailwindcss/components";
 @import "tailwindcss/utilities";
 
-:root,
+:root {
+  --primary: #f1f1f1;
+  --secondary: #93bbfb;
+  --tertiary: rgba(31, 209, 253, 0.6);
+}
+,
 [data-theme] {
   background: hsl(var(--b2));
 }
@@ -29,4 +34,27 @@ p {
 
 .btn.btn-ghost {
   @apply shadow-none;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--secondary) var(--primary);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--primary);
+  border-radius: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background-color: var(--secondary);
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--tertiary);
 }
