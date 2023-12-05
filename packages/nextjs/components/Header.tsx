@@ -51,7 +51,7 @@ export const Header = () => {
 
   useEffect(() => {
     if (switchChains.length > 0) {
-      setChainData(switchChains.filter(item => [1, 11155111, 137, 10, 31337].includes(item.id)));
+      setChainData(switchChains.filter(item => [1, 137, 10, 31337].includes(item.id)));
     }
   }, [switchChains]);
 

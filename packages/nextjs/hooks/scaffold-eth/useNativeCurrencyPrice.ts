@@ -3,7 +3,7 @@ import { useInterval } from "usehooks-ts";
 import scaffoldConfig from "~~/scaffold.config";
 import { fetchPriceFromUniswap } from "~~/utils/scaffold-eth";
 
-const enablePolling = false;
+const enablePolling = true;
 
 /**
  * Get the price of Native Currency based on Native Token/DAI trading pair from Uniswap SDK

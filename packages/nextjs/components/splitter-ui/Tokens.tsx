@@ -59,7 +59,7 @@ const Tokens = () => {
             <tbody>
               {tokenBalances.map((token, index) => (
                 <tr key={index} className="group hover:bg-primary m-1 h-12">
-                  <td className="w-[40%] sm-[w-55%]">
+                  <td className="w-[25%] sm-[w-50%]">
                     <div className="flex gap-1 items-center">
                       <span> {`${token.contract_ticker_symbol}`}</span>
                       {token.contract_ticker_symbol != "ETH" && (
@@ -74,9 +74,9 @@ const Tokens = () => {
                       )}
                     </div>
                   </td>
-                  <td className="w-[20%] sm-[w-15%]">{formatTokenBalance(token.balance, token.contract_decimals)}</td>
-                  <td className="w-[20%] sm-[w-15%]">≈${token.quote.toFixed(2)}</td>
-                  <td className="hidden group-hover:table-cell w-[20%] sm-[w-15%]">
+                  <td className="w-[40%] sm-[w-20%]">{formatTokenBalance(token.balance, token.contract_decimals)}</td>
+                  <td className="w-[20%] sm-[w-15%]">${token.quote?.toFixed(2) || "0"}</td>
+                  <td className="hidden group-hover:table-cell [w-15%]">
                     <button
                       className="btn btn-xs rounded-sm btn-secondary"
                       onClick={() => {
