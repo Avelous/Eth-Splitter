@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { Address } from "../../scaffold-eth";
 import { formatEther } from "viem";
+import { useNetwork } from "wagmi";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import useSpliiterHistory from "~~/hooks/useSpliiterHistory";
 import { getBlockExplorerTxLink, getTargetNetwork } from "~~/utils/scaffold-eth";
@@ -10,6 +11,8 @@ import { getDate } from "~~/utils/scaffold-eth/ethsplitter";
 const EthSplitsHistory = () => {
   const { ethSplitEvents } = useSpliiterHistory();
   const [activeIndex, setActiveIndex] = useState<number[]>([]);
+
+  const { chain } = useNetwork();
 
   const handleToggle = (index: number) => {
     const currentActive = [...activeIndex];
@@ -23,6 +26,10 @@ const EthSplitsHistory = () => {
     setActiveIndex(currentActive);
   };
 
+  const currencySymbol = () => {
+    return chain?.id == 137 ? "MATIC" : "ETH";
+  };
+
   return (
     <div>
       {ethSplitEvents?.map((event, index) => (
@@ -32,7 +39,7 @@ const EthSplitsHistory = () => {
             onClick={() => handleToggle(index)}
           >
             <span className="w-[40%]">Unequal Split</span>
-            <span className="w-[30%] ">{Number(formatEther(event.args.totalAmount))} ETH</span>
+            <span className="w-[30%] ">{Number(formatEther(event.args.totalAmount)) + " " + currencySymbol()}</span>
             <span className="w-[30%] flex justify-center">{getDate(event.block.timestamp)}</span>
           </div>
           {activeIndex.includes(index) && (

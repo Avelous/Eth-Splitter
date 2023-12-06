@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { readContract } from "@wagmi/core";
 import { useAccount } from "wagmi";
 import { erc20ABI } from "wagmi";
+import { useNetwork } from "wagmi";
 import { useScaffoldEventHistory, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
 
 const useSpliiterHistory = () => {
@@ -11,6 +12,7 @@ const useSpliiterHistory = () => {
   const [erc20SplitEqualEvents, setErc20SplitEqualEvents] = useState<any[] | undefined>([]);
 
   const { address } = useAccount();
+  const { chain } = useNetwork();
 
   const getTokenSymbol = async (tokenAddress: string) => {
     if (tokenAddress && tokenAddress != "") {
@@ -59,12 +61,12 @@ const useSpliiterHistory = () => {
   useEffect(() => {
     const events = ethSplits.data?.filter(obj => obj.args.sender === address);
     setEthSplitEvents(events);
-  }, [ethSplits.isLoading, address, ethSplits.data]);
+  }, [ethSplits.isLoading, address, ethSplits.data, chain]);
 
   useEffect(() => {
     const events = ethSplitsEqual.data?.filter(obj => obj.args.sender === address);
     setEthSplitEqualEvents(events);
-  }, [ethSplitsEqual.isLoading, address, ethSplitsEqual.data]);
+  }, [ethSplitsEqual.isLoading, address, ethSplitsEqual.data, chain]);
 
   useEffect(() => {
     const events = erc20Splits.data?.filter(obj => obj.args.sender === address);
@@ -81,7 +83,7 @@ const useSpliiterHistory = () => {
       });
     }
     // setErc20SplitEvents(events);
-  }, [erc20Splits.isLoading, address, erc20Splits.data]);
+  }, [erc20Splits.isLoading, address, erc20Splits.data, chain]);
 
   useEffect(() => {
     const events = erc20SplitsEqual.data?.filter(obj => obj.args.sender === address);
@@ -98,7 +100,7 @@ const useSpliiterHistory = () => {
       });
     }
     // setErc20SplitEqualEvents(events);
-  }, [erc20SplitsEqual.isLoading, address, erc20SplitsEqual.data]);
+  }, [erc20SplitsEqual.isLoading, address, erc20SplitsEqual.data, chain]);
 
   useScaffoldEventSubscriber({
     contractName: "ETHSplitter",

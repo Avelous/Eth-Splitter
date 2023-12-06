@@ -32,9 +32,6 @@ const Splitter = ({
   const { address } = useAccount();
   const { balance: ethBalance } = useAccountBalance(address);
 
-  console.log(symbol);
-  console.log(isToken);
-
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
     let addresses: string[];
@@ -242,7 +239,7 @@ const Splitter = ({
           <div className="absolute flex inset-x-0 top-6 justify-center font-bold text-lg -z-10">
             <span>SPLIT {symbol}</span>
           </div>
-          <p className="mt-12">Balance: {isToken ? balance + " " + symbol : ethBalance + " ETH"}</p>
+          <p className="mt-12">Balance: {(isToken ? balance : ethBalance) + " " + symbol}</p>
 
           {isCustom && (
             <div className="flex flex-col space-y-1 w-full my-1">

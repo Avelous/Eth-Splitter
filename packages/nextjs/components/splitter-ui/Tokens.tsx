@@ -2,6 +2,7 @@ import { useState } from "react";
 import Link from "next/link";
 import SpliEth from "./splitter-components/Splitter";
 import { useAccount } from "wagmi";
+import { useNetwork } from "wagmi";
 import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { InformationCircleIcon } from "@heroicons/react/24/outline";
 import useTokenBalances from "~~/hooks/useTokenBalances";
@@ -15,12 +16,22 @@ const Tokens = () => {
   const [contractAddr, setContractAddr] = useState("");
 
   const { isConnected } = useAccount();
+  const { chain } = useNetwork();
 
   const formatTokenBalance = (balance: bigint, decimals: number) => {
     const divisor = BigInt(Math.pow(10, decimals));
     const integerPart = balance / divisor;
     const fractionalPart = balance % divisor;
     return `${integerPart}.${fractionalPart.toString().padStart(decimals, "0").slice(0, 4)}`;
+  };
+
+  const isNativeCurrency = (symbol: string) => {
+    if (symbol == "ETH") {
+      return true;
+    } else if (chain?.id == 137 && symbol == "MATIC") {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -62,7 +73,7 @@ const Tokens = () => {
                   <td className="w-[25%] sm-[w-50%]">
                     <div className="flex gap-1 items-center">
                       <span> {`${token.contract_ticker_symbol}`}</span>
-                      {token.contract_ticker_symbol != "ETH" && (
+                      {!isNativeCurrency(token.contract_ticker_symbol) && (
                         <span>
                           <Link
                             href={getBlockExplorerAddressLink(getTargetNetwork(), token.contract_address)}
@@ -76,13 +87,13 @@ const Tokens = () => {
                   </td>
                   <td className="w-[40%] sm-[w-20%]">{formatTokenBalance(token.balance, token.contract_decimals)}</td>
                   <td className="w-[20%] sm-[w-15%]">${token.quote?.toFixed(2) || "0"}</td>
-                  <td className="hidden group-hover:table-cell [w-15%]">
+                  <td className="sm:hidden group-hover:table-cell [w-15%]">
                     <button
                       className="btn btn-xs rounded-sm btn-secondary"
                       onClick={() => {
                         const symbol = token.contract_ticker_symbol;
                         setSymbol(symbol);
-                        symbol == "ETH" ? setContractAddr("") : setContractAddr(token.contract_address);
+                        isNativeCurrency(symbol) ? setContractAddr("") : setContractAddr(token.contract_address);
                         setIsCustom(false);
                         setIsOpen(true);
                       }}
@@ -106,8 +117,8 @@ const Tokens = () => {
         <SpliEth
           isOpen={isOpen}
           setIsOpen={setIsOpen}
-          isToken={symbol != "ETH" ? true : false}
-          contractAddr={symbol != "ETH" ? contractAddr : ""}
+          isToken={!isNativeCurrency(symbol)}
+          contractAddr={!isNativeCurrency(symbol) ? contractAddr : ""}
           symbol={symbol}
           isCustom={isCustom}
           setContractAddr={setContractAddr}
