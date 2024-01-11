@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import TokenData from "./splitter-components/TokenData";
 import { parseEther } from "viem";
+import { createPublicClient, http } from "viem";
+import { normalize } from "viem/ens";
+import { mainnet } from "wagmi/chains";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
 
@@ -12,9 +15,22 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [totalTokenAmount, setTotalTokenAmount] = useState("");
   const [totalEthAmount, setTotalEthAmount] = useState("");
   const [tokenContract, setTokenContract] = useState("");
+  const [invalidEnsNames, setInvalidEnsNames] = useState<string[]>([]);
 
-  function addMultipleAddress(value: string) {
+  const publicClient = createPublicClient({
+    chain: mainnet,
+    transport: http(),
+  });
+
+  async function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
+    const resolveEns = async (address: string) => {
+      const ensAddress = await publicClient.getEnsAddress({
+        name: normalize(address),
+      });
+      return String(ensAddress);
+    };
+
     let addresses: string[];
     if (value.includes(",")) {
       addresses = value
@@ -28,12 +44,30 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
         .map(str => str.replace(/\s/g, ""));
     }
 
-    let uniqueAddresses = [...new Set([...addresses])];
+    const resolvedAddresses: string[] = [];
+    setInvalidEnsNames([]);
+    await Promise.all(
+      addresses.map(async address => {
+        if (address.endsWith(".eth")) {
+          const resolvedAddress = await resolveEns(address);
+          if (resolvedAddress === "null") {
+            setInvalidEnsNames(prevState => [...prevState, address]);
+          }
+          console.log(resolvedAddress);
+          resolvedAddresses.push(resolvedAddress);
+        } else {
+          resolvedAddresses.push(address);
+        }
+      }),
+    );
+
+    let uniqueAddresses = [...new Set([...resolvedAddresses])];
 
     uniqueAddresses = uniqueAddresses.filter(validateAddress);
 
     setWallets(uniqueAddresses);
   }
+
   const { writeAsync: splitEqualETH } = useScaffoldContractWrite({
     contractName: "ETHSplitter",
     functionName: "splitEqualETH",
@@ -64,6 +98,8 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     }
     setTotalAmount(totalAmount);
   }, [amount, wallets, splitItem]);
+
+  console.log(invalidEnsNames);
 
   return (
     <>
@@ -107,7 +143,8 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
               />
             </div>
           </div>
-          <p className="ml-2 -mt-1">valid unique addresses: {wallets.length}</p>
+          <h1 className="ml-2 -mt-1">valid unique addresses: {wallets.length}</h1>
+          {invalidEnsNames.length > 0 && <h1 className="ml-2 ">Invalid Ens Names: {invalidEnsNames.join(", ")}</h1>}
           <div className="my-[10px] w-full space-y-4">
             <button
               type="button"
