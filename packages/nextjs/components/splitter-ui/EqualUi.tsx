@@ -53,7 +53,6 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
           if (resolvedAddress === "null") {
             setInvalidEnsNames(prevState => [...prevState, address]);
           }
-          console.log(resolvedAddress);
           resolvedAddresses.push(resolvedAddress);
         } else {
           resolvedAddresses.push(address);
