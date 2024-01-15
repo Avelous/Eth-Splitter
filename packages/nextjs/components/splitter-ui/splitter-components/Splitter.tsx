@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { AddressInput } from "../../scaffold-eth";
-import { parseEther, parseUnits } from "viem";
-import { isAddress } from "viem";
-import { createPublicClient, http } from "viem";
+import { createPublicClient, http, isAddress, parseEther, parseUnits } from "viem";
 import { normalize } from "viem/ens";
 import { useAccount } from "wagmi";
 import { mainnet } from "wagmi/chains";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
-import { useAccountBalance } from "~~/hooks/scaffold-eth";
+import { useAccountBalance, useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { useApproveForSplitting } from "~~/hooks/useApproveForSplitting";
 import { SplitterProps } from "~~/types/splitterUiTypes/splitterUiTypes";
 

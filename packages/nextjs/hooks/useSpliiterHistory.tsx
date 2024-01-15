@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { readContract } from "@wagmi/core";
-import { useAccount } from "wagmi";
-import { erc20ABI } from "wagmi";
-import { useNetwork } from "wagmi";
+import { erc20ABI, useAccount, useNetwork } from "wagmi";
 import { useScaffoldEventHistory, useScaffoldEventSubscriber } from "~~/hooks/scaffold-eth";
 
 const useSpliiterHistory = () => {
