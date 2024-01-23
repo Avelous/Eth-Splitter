@@ -18,7 +18,6 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [amount, setAmount] = useState("");
   const [wallets, setWallets] = useState<string[]>([]);
   const [walletsFilter, setWalletsFilter] = useState<string[]>([]);
-
   const [totalAmount, setTotalAmount] = useState("");
   const [totalTokenAmount, setTotalTokenAmount] = useState("");
   const [totalEthAmount, setTotalEthAmount] = useState("");
