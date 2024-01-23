@@ -90,6 +90,14 @@ module.exports = {
   theme: {
     // Extend Tailwind classes (e.g. font-bai-jamjuree, animate-grow)
     extend: {
+      colors: {
+        new_primary: "#293853",
+        new_secondary: "#3f5174",
+        new_tertiary: "#93bbfb",
+      },
+      backgroundColor: {
+        gradient: "linear-gradient(225deg, #293853 0%, #521f93 100%)",
+      },
       fontFamily: {
         "bai-jamjuree": ["Bai Jamjuree", "sans-serif"],
       },
