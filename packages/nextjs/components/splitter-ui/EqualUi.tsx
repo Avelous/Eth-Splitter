@@ -70,18 +70,23 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     await Promise.all(
       addresses.map(async address => {
         if (address.endsWith(".eth")) {
-          setWalletsFilter(prevState => {
-            const newAddresses = [...new Set([...prevState, address])];
-            return newAddresses;
-          });
           const resolvedAddress = await resolveEns(address);
           if (resolvedAddress === "null") {
             setInvalidAddresses(prevState => {
               const newAddresses = [...new Set([...prevState, address])];
               return newAddresses;
             });
+          } else {
+            setWalletsFilter(prevState => {
+              const newAddresses = [...new Set([...prevState, address])];
+              return newAddresses;
+            });
           }
           resolvedAddresses.push(resolvedAddress);
+          setWalletsFilter(prevState => {
+            const newAddresses = [...new Set([...prevState, address])];
+            return newAddresses;
+          });
         } else {
           resolvedAddresses.push(address);
         }
