@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AddressInput } from "../scaffold-eth";
+import { EtherInput } from "../scaffold-eth";
 import ExportList from "./splitter-components/ExportList";
 import TokenData from "./splitter-components/TokenData";
+import { decompressFromEncodedURIComponent } from "lz-string";
 import { isAddress, parseUnits } from "viem";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
@@ -107,7 +109,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   }, [amounts, wallets]);
 
   useEffect(() => {
-    const { wallets, amounts, tokenAddress } = query;
+    const { wallets, amounts, tokenAddress, walletsUri } = query;
     if (wallets) {
       setWallets(wallets as string[]);
     }
@@ -117,6 +119,10 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     }
     if (tokenAddress) {
       setTokenContract(tokenAddress as string);
+    }
+    if (walletsUri) {
+      const wallets = JSON.parse(decompressFromEncodedURIComponent(walletsUri as string));
+      setWallets(wallets);
     }
     if (Object.keys(query).length > 0) {
       router.replace({
@@ -156,14 +162,18 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                       />
                     </span>
                     <span className="w-4/12">
-                      <input
-                        className="input  input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] font-medium placeholder:text-accent/50 w-full text-gray-400 bg-base-200 border-2 border-base-300"
-                        type="number"
-                        min={0}
-                        value={amounts[index]}
-                        onChange={val => updateAmounts(val.target.value, index)}
-                        placeholder="Amount"
-                      />
+                      {splitItem === "split-tokens" ? (
+                        <input
+                          className="input  input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400 h-[2.2rem] min-h-[2.2rem] font-medium placeholder:text-accent/50 w-full text-gray-400 bg-base-200 border-2 border-base-300"
+                          type="number"
+                          min={0}
+                          value={amounts[index]}
+                          onChange={val => updateAmounts(val.target.value, index)}
+                          placeholder="Amount"
+                        />
+                      ) : (
+                        <EtherInput value={amounts[index]} onChange={val => updateAmounts(val, index)} />
+                      )}
                     </span>
                   </div>
                   {index > 0 && (
@@ -182,7 +192,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                 )}
               </div>
             ))}
-            {wallets.length > 1 && <ExportList wallets={wallets} />}
+            {wallets.length > 1 && <ExportList wallets={wallets} splitType="unequal-splits" />}
             <button type="button" onClick={addWalletField} className="btn btn-primary font-black ">
               <PlusIcon className="h-1/2" />
             </button>
