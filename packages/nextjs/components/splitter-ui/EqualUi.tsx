@@ -2,11 +2,12 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/router";
 import ExportList from "./splitter-components/ExportList";
 import TokenData from "./splitter-components/TokenData";
+import { decompressFromEncodedURIComponent } from "lz-string";
 import { createPublicClient, http, isAddress, parseEther } from "viem";
 import { mainnet } from "viem/chains";
 import { normalize } from "viem/ens";
 import { TrashIcon } from "@heroicons/react/24/outline";
-import { Address } from "~~/components/scaffold-eth";
+import { Address, EtherInput } from "~~/components/scaffold-eth";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
 
@@ -18,7 +19,6 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [amount, setAmount] = useState("");
   const [wallets, setWallets] = useState<string[]>([]);
   const [walletsFilter, setWalletsFilter] = useState<string[]>([]);
-
   const [totalAmount, setTotalAmount] = useState("");
   const [totalTokenAmount, setTotalTokenAmount] = useState("");
   const [totalEthAmount, setTotalEthAmount] = useState("");
@@ -31,39 +31,42 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
     transport: http(),
   });
 
-  async function addMultipleAddress(value: string) {
-    const validateAddress = (address: string) => isAddress(address);
-    const resolveEns = async (address: string) => {
+  const resolveEns = async (name: string) => {
+    try {
       const ensAddress = await publicClient.getEnsAddress({
-        name: normalize(address),
+        name: normalize(name),
       });
       return String(ensAddress);
-    };
-
-    let addresses: string[];
-    if (value.includes(",")) {
-      addresses = value
-        .trim()
-        .split(",")
-        .map(str => str.replace(/\n/g, "").replace(/\s/g, ""))
-        .filter(address => !wallets.includes(address));
-      addresses = addresses.filter(address => !walletsFilter.includes(address));
-    } else {
-      addresses = value
-        .trim()
-        .split(/\s+/)
-        .map(str => str.replace(/\s/g, ""))
-        .filter(address => !wallets.includes(address));
-      addresses = addresses.filter(address => !walletsFilter.includes(address));
+    } catch (error) {
+      return "null";
     }
+  };
 
+  const getEnsName = async (address: string) => {
+    const ensName = await publicClient.getEnsName({
+      address: normalize(address),
+    });
+    return String(ensName);
+  };
+
+  async function addMultipleAddress(value: string) {
+    const validateAddress = (address: string) => isAddress(address);
+
+    const cleanAddress = (str: string) => str.replace(/\n|\s/g, "");
+
+    const splitAddresses = (value: string) =>
+      value.trim().includes(",") ? value.split(",").map(cleanAddress) : value.split(/\s+/).map(cleanAddress);
+
+    const addresses = splitAddresses(value).filter(
+      address => !wallets.includes(address) && !walletsFilter.includes(address),
+    );
     const resolvedAddresses: string[] = [];
+
     setInvalidAddresses([]);
 
-    if (
-      (addresses[addresses.length - 1]?.endsWith(".eth") || addresses[addresses.length - 1]?.startsWith("0x")) &&
-      addresses[addresses.length - 1] !== wallets[wallets.length - 1]
-    ) {
+    const isLoading =
+      addresses[addresses.length - 1]?.endsWith(".eth") || addresses[addresses.length - 1]?.startsWith("0x");
+    if (isLoading && addresses[addresses.length - 1] !== wallets[wallets.length - 1]) {
       setLoadingAddresses(true);
     }
 
@@ -72,50 +75,40 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
         if (address.endsWith(".eth")) {
           const resolvedAddress = await resolveEns(address);
           if (resolvedAddress === "null") {
-            setInvalidAddresses(prevState => {
-              const newAddresses = [...new Set([...prevState, address])];
-              return newAddresses;
-            });
+            setInvalidAddresses(prevState => [...new Set([...prevState, address])]);
           } else {
-            setWalletsFilter(prevState => {
-              const newAddresses = [...new Set([...prevState, address])];
-              return newAddresses;
-            });
+            setWalletsFilter(prevState => [...new Set([...prevState, address])]);
           }
           resolvedAddresses.push(resolvedAddress);
         } else {
           resolvedAddresses.push(address);
         }
-        if (address.startsWith("0x")) {
-          if (validateAddress(address) === false) {
-            setInvalidAddresses(prevState => {
-              const newAddresses = [...new Set([...prevState, address])];
-              return newAddresses;
-            });
-          } else {
-            setWalletsFilter(prevState => {
-              const newAddresses = [...new Set([...prevState, address])];
-              return newAddresses;
-            });
-          }
+
+        if (address.startsWith("0x") && !validateAddress(address)) {
+          setInvalidAddresses(prevState => [...new Set([...prevState, address])]);
         }
       }),
     );
-    let uniqueAddresses = [...new Set([...resolvedAddresses])];
 
-    uniqueAddresses = uniqueAddresses.filter(validateAddress);
+    const uniqueAddresses = [...new Set(resolvedAddresses.filter(validateAddress))];
 
-    setWallets(prevState => {
-      const newAddresses = [...new Set([...prevState, ...uniqueAddresses])];
-      return newAddresses;
-    });
+    setWallets(prevState => [...new Set([...prevState, ...uniqueAddresses])]);
     setLoadingAddresses(false);
   }
 
-  const removeWalletField = (index: number) => {
+  const removeWalletField = async (index: number) => {
+    setLoadingAddresses(true);
+    const ensName = await getEnsName(wallets[index]);
     const newWallets = [...wallets];
+    const newFilter = walletsFilter.filter(
+      wallet => wallet !== wallets[index] && wallet.toLowerCase() !== ensName.toLowerCase(),
+    );
+
     newWallets.splice(index, 1);
+
     setWallets(newWallets);
+    setWalletsFilter(newFilter);
+    setLoadingAddresses(false);
   };
 
   const { writeAsync: splitEqualETH } = useScaffoldContractWrite({
@@ -150,15 +143,23 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   }, [amount, wallets, splitItem]);
 
   useEffect(() => {
-    const { wallets, amount, tokenAddress } = query;
+    const { wallets, amount, tokenAddress, walletsUri } = query;
     if (wallets) {
-      setWallets(wallets as string[]);
+      if (typeof wallets == "string") {
+        setWallets(wallets.split(","));
+      } else {
+        setWallets(wallets as string[]);
+      }
     }
     if (amount) {
       setAmount(amount as string);
     }
     if (tokenAddress) {
       setTokenContract(tokenAddress as string);
+    }
+    if (walletsUri) {
+      const wallets = JSON.parse(decompressFromEncodedURIComponent(walletsUri as string));
+      setWallets(wallets);
     }
     if (Object.keys(query).length > 0) {
       router.replace({
@@ -192,17 +193,19 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
             <p className="font-semibold  ml-1 my-2 break-words">
               {splitItem === "split-eth" ? "ETH Amount Each" : "Token Amount Each"}
             </p>
-            <div
-              className={`flex items-center justify-between border-2 border-base-300 bg-base-200 rounded-full text-accent w-full`}
-            >
-              <input
-                type="number"
-                ref={inputRef}
-                value={amount}
-                min={0}
-                onChange={e => setAmount(e.target.value)}
-                className="input input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400  border w-full font-medium placeholder:text-accent/50 text-gray-400"
-              />
+            <div>
+              {splitItem === "split-tokens" ? (
+                <input
+                  type="number"
+                  ref={inputRef}
+                  value={amount}
+                  min={0}
+                  onChange={e => setAmount(e.target.value)}
+                  className="input  input-ghost focus:outline-none focus:bg-transparent focus:text-gray-400  border-2 border-base-300 w-full font-medium placeholder:text-accent/50 text-gray-400"
+                />
+              ) : (
+                <EtherInput value={amount} onChange={value => setAmount(value)} />
+              )}
             </div>
           </div>
 
@@ -239,7 +242,7 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                   )}
                 </div>
               ))}
-              <ExportList wallets={wallets} />
+              <ExportList wallets={wallets} splitType="equal-splits" />
             </div>
           )}
           {invalidAddresses.length > 0 && (

@@ -43,10 +43,10 @@ export const Header = () => {
 
   const [chainData, setChainData] = useState<Chain[]>();
 
-  const [selectedNetwork, setSelectedNetwork] = useState<string>("");
-
   function changeTargetNetwork(newNetwork: any): void {
-    scaffoldConfig.targetNetwork = newNetwork;
+    if (newNetwork != scaffoldConfig.targetNetwork && newNetwork) {
+      scaffoldConfig.targetNetwork = newNetwork;
+    }
   }
 
   useEffect(() => {
@@ -57,8 +57,16 @@ export const Header = () => {
 
   useEffect(() => {
     if (chain) {
-      setSelectedNetwork(chain.name);
+      let chainName;
+      chain.name == "Ethereum"
+        ? (chainName = "mainnet")
+        : chain.name == "OP Mainnet"
+        ? (chainName = "optimism")
+        : (chainName = chain.name);
+      // switchNetwork?.(chain?.id);
+      changeTargetNetwork(chains[chainName.toLowerCase() as keyof typeof chains]);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chain]);
 
   const navLinks = (
@@ -108,14 +116,15 @@ export const Header = () => {
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">{navLinks}</ul>
       </div>
       <div className="navbar-end flex-grow mr-4 ">
-        {isConnected && (
+        {isConnected && chain && (
           <select
             className="select select-sm sm:w-fit w-20 mr-2"
+            // defaultValue={chain.name}
+            value={`${chain.name}|${chain.id}`}
             style={{ borderWidth: 1, borderColor: chain && (chain as any).color }}
             onChange={event => {
               const [name, id] = event.target.value.split("|");
               switchNetwork?.(+id);
-              console.log(name);
               name === "Ethereum"
                 ? changeTargetNetwork(chains["mainnet"])
                 : name === "Polygon Mumbai"
@@ -128,12 +137,7 @@ export const Header = () => {
             <option disabled>Select network</option>
             {chainData &&
               chainData.map(data => (
-                <option
-                  key={data.name}
-                  value={`${data.name}|${data.id}`}
-                  style={{ color: (data as any).color }}
-                  selected={selectedNetwork === data.name}
-                >
+                <option key={data.name} value={`${data.name}|${data.id}`} style={{ color: (data as any).color }}>
                   {data.name}
                 </option>
               ))}

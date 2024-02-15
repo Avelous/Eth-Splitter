@@ -6,8 +6,6 @@ import { useAccount } from "wagmi";
 import EqualUi from "~~/components/splitter-ui/EqualUi";
 import UnEqualUi from "~~/components/splitter-ui/UnEqualUi";
 
-// import { useDeployedContractInfo } from "~~/hooks/scaffold-eth";
-
 const Home: NextPage = () => {
   const router = useRouter();
   const query = router.query;
@@ -27,13 +25,14 @@ const Home: NextPage = () => {
   let splitterContract: any;
 
   useEffect(() => {
-    const { activeSplitToken, activeSplitType } = query;
-    if (activeSplitToken) {
-      setSplitToken(activeSplitToken.toString());
+    const { token, splitType } = query;
+    if (token) {
+      setSplitToken(token.toString());
     }
-    if (activeSplitType) {
-      setSplitType(activeSplitType.toString());
+    if (splitType) {
+      setSplitType(splitType.toString());
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
   return (
@@ -43,7 +42,7 @@ const Home: NextPage = () => {
         <meta name="description" content="Created with 🏗 scaffold-eth-2" />
       </Head>
 
-      <div className="flex items-center flex-col flex-grow pt-24 ">
+      <div className="flex items-center flex-col flex-grow pt-16 ">
         <div className="flex flex-row items-center gap-4">
           <ul className="flex p-[0.2rem] rounded-full ">
             <li
