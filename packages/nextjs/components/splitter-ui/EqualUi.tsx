@@ -145,7 +145,11 @@ const EqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   useEffect(() => {
     const { wallets, amount, tokenAddress, walletsUri } = query;
     if (wallets) {
-      setWallets(wallets as string[]);
+      if (typeof wallets == "string") {
+        setWallets(wallets.split(","));
+      } else {
+        setWallets(wallets as string[]);
+      }
     }
     if (amount) {
       setAmount(amount as string);

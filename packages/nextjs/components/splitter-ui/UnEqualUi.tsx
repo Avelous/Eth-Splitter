@@ -111,7 +111,11 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   useEffect(() => {
     const { wallets, amounts, tokenAddress, walletsUri } = query;
     if (wallets) {
-      setWallets(wallets as string[]);
+      if (typeof wallets == "string") {
+        setWallets(wallets.split(","));
+      } else {
+        setWallets(wallets as string[]);
+      }
     }
     if (amounts) {
       console.log(amounts);
