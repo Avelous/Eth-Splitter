@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { AddressInput } from "../scaffold-eth";
 import { EtherInput } from "../scaffold-eth";
+import Contacts from "./splitter-components/Contacts";
 import ExportList from "./splitter-components/ExportList";
 import TokenData from "./splitter-components/TokenData";
 import { decompressFromEncodedURIComponent } from "lz-string";
@@ -9,6 +10,7 @@ import { isAddress, parseUnits } from "viem";
 import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { useScaffoldContractWrite } from "~~/hooks/scaffold-eth";
 import { UiJsxProps } from "~~/types/splitterUiTypes/splitterUiTypes";
+import { saveContacts } from "~~/utils/ethSplitter";
 
 const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const router = useRouter();
@@ -19,6 +21,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
   const [amountsInWei, setAmountsInWei] = useState<any[]>([]);
   const [totalAmount, setTotalAmount] = useState("");
   const [tokenContract, setTokenContract] = useState("");
+  const [usdGenMode, setUSDGenMode] = useState(false);
 
   function addMultipleAddress(value: string) {
     const validateAddress = (address: string) => address.includes("0x") && address.length === 42;
@@ -148,11 +151,13 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
           tokenContract={tokenContract}
         />
       )}
-      <div className="mx-auto mt-14">
-        <form className="md:w-[500px] w-[300px] lg:w-[700px]  rounded-3xl shadow-xl border-2 p-4">
+      <div className=" my-14 w-full">
+        <form className="md:w-[500px] w-[95%] lg:w-[700px] mx-auto  rounded-3xl shadow-xl border p-4">
           <div className="flex flex-col space-y-1 w-full my-1">
-            <p className="font-semibold  ml-1 my-0 break-words">Recipient Wallets</p>
-
+            <div className="flex justify-between items-center">
+              <p className="font-semibold  ml-1 my-0 break-words">Recipient Wallets</p>
+              <Contacts setWallets={setWallets} wallets={wallets} />
+            </div>
             {wallets.map((wallet, index) => (
               <div key={index}>
                 <div className="flex gap-2 mt-1 w-full ">
@@ -176,7 +181,12 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                           placeholder="Amount"
                         />
                       ) : (
-                        <EtherInput value={amounts[index]} onChange={val => updateAmounts(val, index)} />
+                        <EtherInput
+                          value={amounts[index]}
+                          onChange={val => updateAmounts(val, index)}
+                          usdGenMode={usdGenMode}
+                          setUsdGenMode={setUSDGenMode}
+                        />
                       )}
                     </span>
                   </div>
@@ -192,7 +202,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
                   )}
                 </div>
                 {!isAddress(wallet) && wallet !== "" && (
-                  <p className="ml-2 text-[0.75rem] text-red-400">address is invalid</p>
+                  <h1 className="ml-2 text-[0.75rem] text-red-400 mt-1">address is invalid</h1>
                 )}
               </div>
             ))}
@@ -215,6 +225,7 @@ const UnEqualUi = ({ splitItem, account, splitterContract }: UiJsxProps) => {
               }
               onClick={async () => {
                 splitItem === "split-tokens" ? await splitERC20() : await splitETH();
+                saveContacts(wallets);
               }}
               className={`btn btn-primary w-full font-black `}
             >
